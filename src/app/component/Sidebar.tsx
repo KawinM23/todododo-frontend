@@ -20,6 +20,7 @@ import SummarizeIcon from "@mui/icons-material/Summarize";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleIcon from "@mui/icons-material/People";
+import { blue, red } from "@mui/material/colors";
 
 const drawerWidth = 240;
 
@@ -183,7 +184,11 @@ export default function Sidebar() {
                 justifyContent: "center",
               }}
             >
-              {login ? <LogoutIcon /> : <LoginIcon />}
+              {login ? (
+                <LogoutIcon style={{ color: red[500] }} />
+              ) : (
+                <LoginIcon style={{ color: blue[500] }} />
+              )}
             </ListItemIcon>
             <ListItemText
               primary={login ? "Logout" : "Login"}

@@ -73,7 +73,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
           {row.title}
         </TableCell>
         <TableCell>{row.description}</TableCell>
-        <TableCell>{row.deadline.toUTCString()}</TableCell>
+        <TableCell className="w-40">{row.deadline.toUTCString()}</TableCell>
         <TableCell>{row.completed}</TableCell>
         <TableCell>{row.community_id}</TableCell>
       </TableRow>
