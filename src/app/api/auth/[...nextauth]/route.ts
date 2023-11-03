@@ -1,4 +1,6 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import { userLogIn } from "@/libs/userLogIn";
+import NextAuth from "next-auth";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: AuthOptions = {
@@ -23,7 +25,7 @@ export const authOptions: AuthOptions = {
         // (i.e., the request IP address)
 
         if (!credentials) return null;
-        const user = { name: "James" };
+        const user = userLogIn(credentials.email, credentials.password);
 
         // If no error and we have user data, return it
         if (user) {
