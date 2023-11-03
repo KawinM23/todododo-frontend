@@ -1,15 +1,23 @@
-import { FormControl, FormHelperText, Input, InputLabel } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  FormHelperText,
+  Input,
+  InputLabel,
+  TextField,
+} from "@mui/material";
 
 export default function RegisterForm() {
   return (
-    <form noValidate autoComplete="off">
-      <FormControl sx={{ width: "25ch" }}>
-        <InputLabel htmlFor="my-input">Email address</InputLabel>
-        <Input id="my-input" aria-describedby="my-helper-text" />
-        <FormHelperText id="my-helper-text">
-          We'll never share your email.
-        </FormHelperText>
-      </FormControl>
+    <form className="flex flex-col gap-3">
+      <TextField id="email" name="email" label="Email" variant="standard" />
+      <TextField
+        id="password"
+        name="password"
+        label="Password"
+        variant="standard"
+      />
+      <Button>Register</Button>
     </form>
   );
 }

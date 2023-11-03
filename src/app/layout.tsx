@@ -22,12 +22,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <NextAuthProvider session={session}>
+          <CssBaseline />
           <Box sx={{ display: "flex" }}>
-            <CssBaseline />
             <Sidebar />
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
               {children}
