@@ -4,9 +4,14 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+
 import { useState } from "react";
-import { TextField } from "@mui/material";
+import { Grid, TextField } from "@mui/material";
+
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 const style = {
   position: "absolute" as "absolute",
@@ -25,7 +30,7 @@ export default function AddTask() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [task, setTask] = useState({ title: "" });
+  const [task, setTask] = useState({ title: "", description: "" });
 
   const onChange = (e: any) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -49,15 +54,27 @@ export default function AddTask() {
       >
         <Fade in={open}>
           <Box sx={style} className="rounded-xl">
-            <form action={undefined}>
-              <h1 className="mb-3">Add Task</h1>
+            <form action={undefined} className="flex flex-col gap-4">
+              <h1 className="mb-2">Add Task</h1>
               <TextField
                 id="title"
                 name="title"
                 label="Title"
                 onChange={onChange}
                 value={task.title || ""}
+                sx={{ display: "block" }}
               />
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                onChange={onChange}
+                value={task.description || ""}
+                sx={{ display: "block" }}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker label="Basic date time picker" />
+              </LocalizationProvider>
             </form>
           </Box>
         </Fade>

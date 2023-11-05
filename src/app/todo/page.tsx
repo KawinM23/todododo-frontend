@@ -1,4 +1,4 @@
-import AddTask from "./component/Addtask";
+import AddTask from "./component/AddTask";
 import TaskTable from "./component/TaskTable";
 
 export default function page() {

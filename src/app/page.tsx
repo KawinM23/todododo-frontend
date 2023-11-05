@@ -1,4 +1,6 @@
+"use client";
 import { Button } from "@mui/material";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 
 export default function Home() {
@@ -10,7 +12,14 @@ export default function Home() {
         <Button variant="outlined" href="/user/register">
           Register
         </Button>
-        <Button variant="outlined">Login</Button>
+        <Button
+          variant="outlined"
+          onClick={() => {
+            signIn();
+          }}
+        >
+          Login
+        </Button>
       </div>
     </main>
   );
