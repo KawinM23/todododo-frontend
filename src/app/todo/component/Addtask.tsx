@@ -6,12 +6,12 @@ import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
 
 import { useState } from "react";
-import { Grid, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs from "dayjs";
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,10 +30,20 @@ export default function AddTask() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [task, setTask] = useState({ title: "", description: "" });
+  const [task, setTask] = useState({
+    title: "",
+    description: "",
+    deadline: dayjs(),
+  });
 
   const onChange = (e: any) => {
     setTask({ ...task, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = async () => {
+    try {
+      await console.log(task);
+    } catch (error) {}
   };
 
   return (
@@ -54,14 +64,14 @@ export default function AddTask() {
       >
         <Fade in={open}>
           <Box sx={style} className="rounded-xl">
-            <form action={undefined} className="flex flex-col gap-4">
+            <form action={onSubmit} className="flex flex-col gap-4">
               <h1 className="mb-2">Add Task</h1>
               <TextField
                 id="title"
                 name="title"
                 label="Title"
                 onChange={onChange}
-                value={task.title || ""}
+                value={task.title}
                 sx={{ display: "block" }}
               />
               <TextField
@@ -69,12 +79,21 @@ export default function AddTask() {
                 name="description"
                 label="Description"
                 onChange={onChange}
-                value={task.description || ""}
+                value={task.description}
                 sx={{ display: "block" }}
               />
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker label="Basic date time picker" />
+                <DateTimePicker
+                  label="Basic date time picker"
+                  value={task.deadline}
+                  onChange={(newValue) => {
+                    if (newValue != null) {
+                      setTask({ ...task, deadline: newValue });
+                    }
+                  }}
+                />
               </LocalizationProvider>
+              <Button type="submit">Add Task</Button>
             </form>
           </Box>
         </Fade>

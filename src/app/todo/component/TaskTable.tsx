@@ -24,9 +24,9 @@ interface Task {
 function createData(
   id: string,
   title: string,
-  description: string | undefined | null,
-  community_id: string | undefined | null
-) {
+  description: string | undefined,
+  community_id: string | undefined
+): Task {
   return {
     id: id,
     title: title,
@@ -40,17 +40,17 @@ function createData(
 
 const rows = [
   createData("000001", "Task01", undefined, "COMM"),
-  createData("000002", "Task02", "Hello", null),
+  createData("000002", "Task02", "Hello", undefined),
   createData("000003", "Task03", undefined, "COMM"),
   createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
-  createData("000004", "Task04", undefined, "COMM"),
+  createData("000005", "Task04", undefined, "COMM"),
+  createData("000006", "Task04", undefined, "COMM"),
+  createData("000007", "Task04", undefined, "COMM"),
+  createData("000008", "Task04", undefined, "COMM"),
+  createData("000009", "Task04", undefined, "COMM"),
+  createData("000010", "Task04", undefined, "COMM"),
+  createData("000011", "Task04", undefined, "COMM"),
+  createData("000012", "Task04", undefined, "COMM"),
 ];
 
 function Row(props: { row: ReturnType<typeof createData> }) {
