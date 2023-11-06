@@ -95,7 +95,7 @@ export default function Sidebar() {
             onClick={() => {
               setOpen(true);
             }}
-            edge="start"
+            sx={{ marginRight: 0.5 }}
           >
             <MenuIcon />
           </IconButton>
@@ -136,14 +136,18 @@ export default function Sidebar() {
       </List>
       <Divider />
       <List>
-        {["Account", "Setting"].map((text, index) => (
-          <ListItem key={text} disablePadding sx={{ display: "block" }}>
+        {[
+          ["Account", "/user/account"],
+          ["Setting", "/setting"],
+        ].map((text, index) => (
+          <ListItem key={text[0]} disablePadding sx={{ display: "block" }}>
             <ListItemButton
               sx={{
                 minHeight: 48,
                 justifyContent: open ? "initial" : "center",
                 px: 2.5,
               }}
+              href={text[1]}
             >
               <ListItemIcon
                 sx={{
@@ -155,7 +159,7 @@ export default function Sidebar() {
                 {index == 0 && <AccountCircle />}
                 {index == 1 && <Settings />}
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary={text[0]} sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </ListItem>
         ))}
