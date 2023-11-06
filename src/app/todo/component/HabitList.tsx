@@ -91,8 +91,8 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 
 export default function HabitList() {
   return (
-    <div className="h-[48%]">
-      <TableContainer component={Paper} sx={{ height: "45%" }}>
+    <div className="h-[50%]">
+      <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>

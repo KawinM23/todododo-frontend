@@ -17,6 +17,7 @@ import {
   Fade,
   Modal,
   TextField,
+  Typography,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -48,8 +49,10 @@ function createData(
 }
 
 const rows = [
-  createData("000001", "Habit01", undefined),
-  createData("000002", "Habit02", "Hello"),
+  createData("000001", "Rountine01", undefined),
+  createData("000002", "Rountine02", "Hello"),
+  createData("000003", "Rountine01", undefined),
+  createData("000004", "Rountine02", "Hello"),
 ];
 
 function Row(props: { row: ReturnType<typeof createData> }) {
@@ -93,9 +96,9 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 
 export default function RoutineList() {
   return (
-    <div className="h-[48%]">
+    <div className="h-[50%]">
       <AddRoutine />
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ height: "90%" }}>
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -117,18 +120,6 @@ export default function RoutineList() {
   );
 }
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "50%",
-  bgcolor: "background.paper",
-  border: "1px solid #3f93e8",
-  boxShadow: 24,
-  p: 4,
-};
-
 function AddRoutine() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -147,8 +138,9 @@ function AddRoutine() {
   };
 
   return (
-    <div className="w-full text-right">
-      <Button onClick={handleOpen}>Add Task</Button>
+    <div className="w-full text-right flex flex-row justify-between">
+      <Typography variant="h5">Routine Lists</Typography>
+      <Button onClick={handleOpen}>Add Routine</Button>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -163,7 +155,20 @@ function AddRoutine() {
         }}
       >
         <Fade in={open}>
-          <Box sx={style} className="rounded-xl">
+          <Box
+            sx={{
+              position: "absolute" as "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              bgcolor: "background.paper",
+              border: "1px solid #3f93e8",
+              boxShadow: 24,
+              p: 4,
+            }}
+            className="rounded-xl"
+          >
             <form action={onSubmit} className="flex flex-col gap-4">
               <h1 className="mb-2">Add Task</h1>
               <TextField

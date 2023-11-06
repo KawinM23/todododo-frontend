@@ -1,7 +1,6 @@
-import AddTask from "./component/AddTask";
 import HabitList from "./component/HabitList";
 import RoutineList from "./component/RoutineList";
-import TaskTable from "./component/TaskTable";
+import TaskList from "./component/TaskList";
 
 export default function page() {
   return (
@@ -10,10 +9,7 @@ export default function page() {
         <RoutineList />
         <HabitList />
       </div>
-      <div className="w-1/2">
-        <AddTask />
-        <TaskTable taskType={"normal"} />
-      </div>
+      <TaskList taskType={"normal"} />
     </div>
   );
 }
