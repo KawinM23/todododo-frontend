@@ -1,39 +1,40 @@
 "use client";
-import * as React from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { useEffect, useRef, useState } from "react";
 import {
-  IconButton,
-  Collapse,
-  Box,
-  Typography,
-  TextField,
-  Modal,
-  Fade,
-  Button,
   Backdrop,
-  Popper,
+  Box,
+  Button,
   ClickAwayListener,
-  MenuList,
-  MenuItem,
+  Collapse,
+  Fade,
   Grow,
+  IconButton,
+  MenuItem,
+  MenuList,
+  Modal,
+  Paper,
+  Popper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
-import { useState } from "react";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
+
+//Icons
+import CheckIcon from "@mui/icons-material/Check";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import React from "react";
 
 interface Task {
   id: string;
@@ -116,13 +117,13 @@ export default function TaskList({ taskType }: { taskType: string }) {
 
 function Row(props: { row: ReturnType<typeof createData> }) {
   const { row } = props;
-  const [expand, setExpand] = React.useState(false);
-  const [openEditTask, setOpenEditTask] = React.useState(false);
+  const [expand, setExpand] = useState(false);
+  const [openEditTask, setOpenEditTask] = useState(false);
 
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef<HTMLButtonElement>(null);
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+  const prevOpen = useRef(open);
+  useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current!.focus();
     }
