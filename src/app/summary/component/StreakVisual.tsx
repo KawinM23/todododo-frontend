@@ -1,6 +1,6 @@
 "use client";
 import dayjs from "dayjs";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export interface StreakData {
   startDate: Date;
@@ -32,18 +32,18 @@ export default function StreakVisual({ data }: { data: StreakData }) {
   const monthly = data.repeat == "monthly";
 
   return (
-    <div className={`h-[500px] w-[90%] py-10`}>
+    <div className={`h-[500px] w-[90%] py-10 mx-auto`}>
       {data.streak.map((eachStreak, index) => {
         return (
-          <>
+          <Fragment key={index}>
             <span
               className={`${daily && "w-10"} ${weekly && "w-32"} ${
                 monthly && "w-14"
               } h-10 mr-2 rounded-full inline-block relative transition-all duration-300 ${
-                eachStreak ? "bg-green-500" : "bg-red-500"
-              } ${
                 timeLeft < data.streak.length - index
-                  ? ""
+                  ? eachStreak
+                    ? "bg-green-500"
+                    : "bg-red-500"
                   : "bg-gray-300 scale-90"
               }`}
               key={index}
@@ -63,7 +63,7 @@ export default function StreakVisual({ data }: { data: StreakData }) {
             {daily && index % 7 == 6 && <br />}
             {weekly && index % 4 == 3 && <br />}
             {monthly && index % 12 == 11 && <br />}
-          </>
+          </Fragment>
         );
       })}
     </div>
