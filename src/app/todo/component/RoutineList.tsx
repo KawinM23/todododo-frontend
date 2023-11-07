@@ -74,8 +74,8 @@ export default function RoutineList() {
   return (
     <div className="h-[50%]">
       <div className="w-full flex flex-row justify-between">
-        <Typography variant="h5">Task Lists</Typography>
-        <Button onClick={() => setOpenAddTask(true)}>Add Task</Button>
+        <Typography variant="h5">Routine Lists</Typography>
+        <Button onClick={() => setOpenAddTask(true)}>Add Routine</Button>
         <AddRoutine openState={[openAddTask, setOpenAddTask]} />
       </div>
       <TableContainer component={Paper} sx={{ height: "90%" }}>
