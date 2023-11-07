@@ -1,10 +1,11 @@
 import CommunityList from "./component/CommunityList";
+import MyCommunity from "./component/MyCommunity";
 
 export default function page() {
   return (
     <main>
-      <CommunityList title={"My Community"} />
-      <CommunityList title={"Discover Community!"} />
+      <MyCommunity />
+      <CommunityList />
     </main>
   );
 }

@@ -1,21 +1,39 @@
-import {
-  Button,
-  FormControl,
-  FormHelperText,
-  Input,
-  InputLabel,
-  TextField,
-} from "@mui/material";
+"use client";
+import { Button, TextField } from "@mui/material";
+import { useState } from "react";
 
 export default function RegisterForm() {
+  const [registerData, setRegisterData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const onChange = (e: any) => {
+    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = async () => {
+    try {
+      console.log(registerData);
+    } catch (error) {}
+  };
   return (
-    <form className="flex flex-col gap-3">
-      <TextField id="email" name="email" label="Email" variant="standard" />
+    <form className="flex flex-col gap-3" action={onSubmit}>
       <TextField
         id="username"
         name="username"
         label="Username"
         variant="standard"
+        onChange={onChange}
+      />
+      <TextField
+        id="email"
+        name="email"
+        label="Email"
+        variant="standard"
+        type={"email"}
+        onChange={onChange}
       />
       <TextField
         id="password"
@@ -23,8 +41,9 @@ export default function RegisterForm() {
         type="password"
         label="Password"
         variant="standard"
+        onChange={onChange}
       />
-      <Button>Register</Button>
+      <Button type="submit">Register</Button>
     </form>
   );
 }
