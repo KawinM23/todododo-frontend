@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useState } from "react";
 
 interface Habit {
   id: string;
@@ -52,19 +53,21 @@ const rows = [
 
 function Row(props: { row: ReturnType<typeof createData> }) {
   const { row } = props;
-  const [open, setOpen] = React.useState(false);
+  const [expand, setExpand] = useState(false);
 
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
+        <TableCell sx={{ width: 50 }}>
+          {row.description && (
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setExpand(!expand)}
+            >
+              {expand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          )}
         </TableCell>
         <TableCell component="th" scope="row">
           {row.title}
@@ -80,7 +83,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
+          <Collapse in={expand} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}></Box>
           </Collapse>
         </TableCell>

@@ -91,8 +91,8 @@ function CommunityCard() {
             We're the most active community
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button size="small">Join</Button>
+        <CardActions sx={{ float: "right" }}>
+          <Button size="small">Leave</Button>
         </CardActions>
       </Fragment>
     </Card>
