@@ -43,8 +43,8 @@ export default function StreakVisual({ data }: { data: StreakData }) {
                 eachStreak ? "bg-green-500" : "bg-red-500"
               } ${
                 timeLeft < data.streak.length - index
-                  ? "opacity-100"
-                  : "opacity-0"
+                  ? ""
+                  : "bg-gray-300 scale-90"
               }`}
               key={index}
             >
