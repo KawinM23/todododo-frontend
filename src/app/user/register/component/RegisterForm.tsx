@@ -1,4 +1,5 @@
 "use client";
+import { register } from "@/libs/api/account";
 import { Button, TextField } from "@mui/material";
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ export default function RegisterForm() {
   const onSubmit = async () => {
     try {
       console.log(registerData);
+      await register(registerData);
     } catch (error) {}
   };
   return (
