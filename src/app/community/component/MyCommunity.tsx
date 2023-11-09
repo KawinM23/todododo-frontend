@@ -1,15 +1,8 @@
 "use client";
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import { Fragment, useState } from "react";
+import { Box, Button, Tab, Tabs, Typography } from "@mui/material";
+import { useState } from "react";
+import OwnedCommunity from "./OwnedCommunity";
+import JoinedCommunity from "./JoinedCommunity";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,39 +55,12 @@ export default function CommunityList() {
         </Box>
 
         <CustomTabPanel value={tab} index={0}>
-          <div className="grid grid-cols-3 gap-5">
-            <CommunityCard />
-            <CommunityCard />
-            <CommunityCard />
-          </div>
+          <JoinedCommunity />
         </CustomTabPanel>
         <CustomTabPanel value={tab} index={1}>
-          <div className="grid grid-cols-3 gap-5">
-            <CommunityCard />
-          </div>
+          <OwnedCommunity />
         </CustomTabPanel>
       </Box>
     </div>
-  );
-}
-
-function CommunityCard() {
-  return (
-    <Card variant="outlined">
-      <Fragment>
-        <CardContent>
-          <Typography variant="h5" component="div">
-            Community1
-          </Typography>
-
-          <Typography variant="body2">
-            We're the most active community
-          </Typography>
-        </CardContent>
-        <CardActions sx={{ float: "right" }}>
-          <Button size="small">Leave</Button>
-        </CardActions>
-      </Fragment>
-    </Card>
   );
 }

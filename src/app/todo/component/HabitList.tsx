@@ -85,7 +85,7 @@ export default function HabitList() {
               <TableCell />
               <TableCell>Title</TableCell>
               <TableCell>Score</TableCell>
-              <TableCell />
+              <TableCell>Action</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
@@ -134,7 +134,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
           {row.title}
         </TableCell>
         <TableCell>{row.score}</TableCell>
-        <TableCell>
+        <TableCell sx={{ width: 100 }}>
           <ButtonGroup aria-label="outlined primary button group">
             <Button>+</Button>
             <Button>-</Button>
