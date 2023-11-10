@@ -190,7 +190,6 @@ function Row(props: { row: ReturnType<typeof createData> }) {
             aria-haspopup="true"
             onClick={() => {
               setOpen((prevOpen) => !prevOpen);
-              console.log();
             }}
           >
             <MoreVertIcon fontSize="inherit" />

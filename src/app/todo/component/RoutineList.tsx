@@ -24,9 +24,11 @@ import {
   Popper,
   Select,
   InputLabel,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
@@ -35,15 +37,24 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import {
+  addRoutine,
+  completeRoutine,
+  deleteRoutine,
+  editRoutine,
+} from "@/libs/api/routine";
+import { useSession } from "next-auth/react";
 
 interface Routine {
   id: string;
   title: string;
   description?: string;
-  checktime?: Date;
+  checktime?: Date | undefined;
   typena: string;
 
   user_id: string;
+  completed: boolean;
 }
 
 function createData(
@@ -58,6 +69,7 @@ function createData(
     checktime: undefined,
     typena: "daily",
     user_id: "0001",
+    completed: false,
   };
 }
 
@@ -68,7 +80,7 @@ const rows = [
   createData("000004", "Rountine02", "Hello"),
 ];
 
-export default function RoutineList() {
+export default function RoutineList({ routines }: { routines: Routine[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
@@ -78,7 +90,7 @@ export default function RoutineList() {
         <Button onClick={() => setOpenAddTask(true)}>Add Routine</Button>
         <AddRoutine openState={[openAddTask, setOpenAddTask]} />
       </div>
-      <TableContainer component={Paper} sx={{ height: "90%" }}>
+      <TableContainer component={Paper} sx={{ maxHeight: "90%" }}>
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -90,7 +102,7 @@ export default function RoutineList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {routines.map((row) => (
               <Row key={row.id} row={row} />
             ))}
           </TableBody>
@@ -101,6 +113,7 @@ export default function RoutineList() {
 }
 
 function Row(props: { row: ReturnType<typeof createData> }) {
+  const router = useRouter();
   const { row } = props;
   const [expand, setExpand] = useState(false);
 
@@ -116,6 +129,25 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 
     prevOpen.current = open;
   }, [open]);
+
+  const doneHandler = async () => {
+    try {
+      await completeRoutine(row.id);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteHandler = async () => {
+    try {
+      setOpen(false);
+      await deleteRoutine(row.id);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -149,7 +181,6 @@ function Row(props: { row: ReturnType<typeof createData> }) {
             aria-haspopup="true"
             onClick={() => {
               setOpen((prevOpen) => !prevOpen);
-              console.log();
             }}
           >
             <MoreVertIcon fontSize="inherit" />
@@ -190,13 +221,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                       >
                         Edit
                       </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        Delete
-                      </MenuItem>
+                      <MenuItem onClick={deleteHandler}>Delete</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -214,112 +239,160 @@ function Row(props: { row: ReturnType<typeof createData> }) {
           </Collapse>
         </TableCell>
       </TableRow>
-      <AddRoutine
-        openState={[openEditTask, setOpenEditTask]}
-        routineProp={row}
-      />
+      <AddRoutine openState={[openEditTask, setOpenEditTask]} taskProp={row} />
     </React.Fragment>
   );
 }
 
 function AddRoutine({
   openState: [open, setOpen],
-  routineProp: routineProp,
+  taskProp: taskProp,
 }: {
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
-  routineProp?: Routine;
+  taskProp?: Routine;
 }) {
-  const [routine, setRoutine] = useState({
-    title: routineProp?.title || "",
-    description: routineProp?.description || "",
-    typena: routineProp?.typena || "",
+  const { data: session } = useSession();
+  const router = useRouter();
+
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [successText, setSuccessText] = React.useState("");
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
+
+  const [task, setTask] = useState({
+    title: taskProp?.title || "",
+    description: taskProp?.description || "",
+    typena: taskProp?.typena || "",
   });
 
   const onChange = (e: any) => {
-    setRoutine({ ...routine, [e.target.name]: e.target.value });
+    setTask({ ...task, [e.target.name]: e.target.value });
   };
 
   const onSubmit = async () => {
     try {
-      if (routineProp) {
-        await console.log("Edit ", routine);
+      if (taskProp) {
+        console.log("Edit", task.title);
+        if (session?.user.sub) {
+          const res = await editRoutine({
+            ...task,
+
+            user_id: session?.user.sub,
+            id: taskProp.id,
+            completed: taskProp.completed,
+          });
+          if (res != null) {
+            setSuccessText("Edit Task Completed!");
+            setSnackOpen(true);
+            setOpen(false);
+            router.refresh();
+          }
+        }
       } else {
-        await console.log("Add ", routine);
+        console.log("Add", task.title);
+        if (session?.user.sub) {
+          const res = await addRoutine({
+            ...task,
+            user_id: session?.user.sub,
+          });
+          if (res != null) {
+            setSuccessText("Add Task Completed!");
+            setSnackOpen(true);
+            setOpen(false);
+            router.refresh();
+          }
+        }
       }
     } catch (error) {}
   };
 
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={() => setOpen(false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}
-    >
-      <Fade in={open}>
-        <Box
-          sx={{
-            position: "absolute" as "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "50%",
-            bgcolor: "background.paper",
-            border: "1px solid #3f93e8",
-            boxShadow: 24,
-            p: 4,
-          }}
-          className="rounded-xl"
-        >
-          <form action={onSubmit} className="flex flex-col gap-4">
-            <Typography variant="h6" className="mb-2">
-              {routineProp ? "Edit Routine" : "Add Routine"}
-            </Typography>
-            <TextField
-              id="title"
-              name="title"
-              label="Title"
-              onChange={onChange}
-              value={routine.title}
-              fullWidth
-              sx={{ display: "block" }}
-            />
-            <TextField
-              id="description"
-              name="description"
-              label="Description"
-              onChange={onChange}
-              value={routine.description}
-              fullWidth
-              sx={{ display: "block" }}
-              multiline
-              minRows={2}
-            />
-            <InputLabel id="typena">Type</InputLabel>
-            <Select
-              id="typena"
-              name="typena"
-              label="Type"
-              value={routine.typena}
-              onChange={onChange}
-            >
-              <MenuItem value={"daily"}>daily</MenuItem>
-              <MenuItem value={"weekly"}>weekly</MenuItem>
-              <MenuItem value={"monthly"}>monthly</MenuItem>
-            </Select>
-            <Button type="submit">
-              {routineProp ? "Edit Routine" : "Add Routine"}
-            </Button>
-          </form>
-        </Box>
-      </Fade>
-    </Modal>
+    <Fragment>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={() => setOpen(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box
+            sx={{
+              position: "absolute" as "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              bgcolor: "background.paper",
+              border: "1px solid #3f93e8",
+              boxShadow: 24,
+              p: 4,
+            }}
+            className="rounded-xl"
+          >
+            <form action={onSubmit} className="flex flex-col gap-4">
+              <Typography variant="h6" className="mb-2">
+                {taskProp ? "Edit Routine" : "Add Routine"}
+              </Typography>
+              <TextField
+                id="title"
+                name="title"
+                label="Title"
+                onChange={onChange}
+                value={task.title}
+                fullWidth
+                sx={{ display: "block" }}
+              />
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                onChange={onChange}
+                value={task.description}
+                fullWidth
+                sx={{ display: "block" }}
+                multiline
+                minRows={2}
+              />
+              <InputLabel id="typena">Type</InputLabel>
+              <Select
+                id="typena"
+                name="typena"
+                label="Type"
+                value={task.typena}
+                onChange={onChange}
+              >
+                <MenuItem value={"daily"}>daily</MenuItem>
+                <MenuItem value={"weekly"}>weekly</MenuItem>
+                <MenuItem value={"monthly"}>monthly</MenuItem>
+              </Select>
+              <Button type="submit">
+                {taskProp ? "Edit Routine" : "Add Routine"}
+              </Button>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {successText}
+        </Alert>
+      </Snackbar>
+    </Fragment>
   );
 }

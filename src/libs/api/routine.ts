@@ -1,11 +1,11 @@
-export async function getAllTasks(user_id: string) {
+export async function getAllRoutines(user_id: string) {
   try {
     const res = await fetch(
-      process.env.TASK_SERVICE_API_ROUTE + "/task?user_id=" + user_id,
+      process.env.TASK_SERVICE_API_ROUTE + "/routine?user_id=" + user_id,
       {
         method: "GET",
         cache: "no-store",
-        next: { tags: ["task"] },
+        next: { tags: ["routine"] },
       }
     );
 
@@ -15,28 +15,28 @@ export async function getAllTasks(user_id: string) {
   }
 }
 
-export async function addTask({
+export async function addRoutine({
   title,
   description,
-  deadline,
+  typena,
   user_id,
 }: {
   title: string;
   description: string;
-  deadline: Date;
+  typena: string;
   user_id: string;
 }) {
-  console.log("Add Task ", title);
+  console.log("Add Routine ", title);
   try {
     const res = await fetch(
-      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task",
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/routine",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title,
           description: description,
-          deadline: deadline,
+          typena: typena,
           completed: false,
           user_id: user_id,
         }),
@@ -52,32 +52,29 @@ export async function addTask({
   }
 }
 
-export async function editTask({
+export async function editRoutine({
   title,
   description,
-  deadline,
   completed,
   user_id,
   id,
 }: {
   title: string;
   description: string;
-  deadline: Date;
   completed: boolean;
   user_id: string;
   id: string;
 }) {
-  console.log("Edit Task", title);
+  console.log("Edit Routine", title);
   try {
     const res = await fetch(
-      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task/" + id,
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/routine/" + id,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title,
           description: description,
-          deadline: deadline,
           completed: completed,
           user_id: user_id,
         }),
@@ -93,11 +90,11 @@ export async function editTask({
   }
 }
 
-export async function completeTask(id: string) {
+export async function completeRoutine(id: string) {
   try {
     const res = await fetch(
       process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE +
-        "/task/" +
+        "/routine/" +
         id +
         "/complete",
       {
@@ -115,10 +112,10 @@ export async function completeTask(id: string) {
   }
 }
 
-export async function deleteTask(id: string) {
+export async function deleteRoutine(id: string) {
   try {
     const res = await fetch(
-      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task/" + id,
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/routine/" + id,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
