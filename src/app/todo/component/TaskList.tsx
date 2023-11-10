@@ -291,8 +291,6 @@ function AddTask({
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
-  console.log(taskProp);
-
   const onSubmit = async () => {
     try {
       if (taskProp) {
