@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -14,6 +15,7 @@ import {
   Modal,
   Paper,
   Popper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -35,6 +37,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import React from "react";
+import { addTask, completeTask, deleteTask, editTask } from "@/libs/api/task";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface Task {
   id: string;
@@ -63,27 +68,27 @@ function createData(
   };
 }
 
-const rows = [
-  createData("000001", "Task01", undefined, undefined),
-  createData(
-    "000002",
-    "Task02",
-    "Hello this is the task that you need to do. ",
-    undefined
-  ),
-  createData("000003", "Task03", undefined, undefined),
-  createData("000004", "Task04", undefined, undefined),
-  createData("000005", "Task04", undefined, undefined),
-  createData("000006", "Task04", undefined, undefined),
-  createData("000007", "Task04", undefined, undefined),
-  createData("000008", "Task04", undefined, undefined),
-  createData("000009", "Task04", undefined, "COMM"),
-  createData("000010", "Task04", undefined, "COMM"),
-  createData("000011", "Task04", undefined, "COMM"),
-  createData("000012", "Task04", undefined, "COMM"),
-];
+// const rows = [
+//   createData("000001", "Task01", undefined, undefined),
+//   createData(
+//     "000002",
+//     "Task02",
+//     "Hello this is the task that you need to do. ",
+//     undefined
+//   ),
+//   createData("000003", "Task03", undefined, undefined),
+//   createData("000004", "Task04", undefined, undefined),
+//   createData("000005", "Task04", undefined, undefined),
+//   createData("000006", "Task04", undefined, undefined),
+//   createData("000007", "Task04", undefined, undefined),
+//   createData("000008", "Task04", undefined, undefined),
+//   createData("000009", "Task04", undefined, "COMM"),
+//   createData("000010", "Task04", undefined, "COMM"),
+//   createData("000011", "Task04", undefined, "COMM"),
+//   createData("000012", "Task04", undefined, "COMM"),
+// ];
 
-export default function TaskList({ taskType }: { taskType: string }) {
+export default function TaskList({ tasks }: { tasks: Task[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
@@ -105,9 +110,11 @@ export default function TaskList({ taskType }: { taskType: string }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <Row key={row.id} row={row} />
-            ))}
+            {tasks.map((row) => {
+              if (!row.completed) {
+                return <Row key={row.id} row={row} />;
+              }
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -116,6 +123,7 @@ export default function TaskList({ taskType }: { taskType: string }) {
 }
 
 function Row(props: { row: ReturnType<typeof createData> }) {
+  const router = useRouter();
   const { row } = props;
   const [expand, setExpand] = useState(false);
   const [openEditTask, setOpenEditTask] = useState(false);
@@ -130,6 +138,25 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 
     prevOpen.current = open;
   }, [open]);
+
+  const doneHandler = async () => {
+    try {
+      await completeTask(row.id);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteHandler = async () => {
+    try {
+      setOpen(false);
+      await deleteTask(row.id);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -150,7 +177,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
         </TableCell>
         <TableCell>{dayjs(row.deadline).format("DD/MM/YYYY h:mm A")}</TableCell>
         <TableCell sx={{ width: 70 }} align="center">
-          <IconButton aria-label="done" size="small">
+          <IconButton aria-label="done" size="small" onClick={doneHandler}>
             <CheckIcon fontSize="inherit" />
           </IconButton>
         </TableCell>
@@ -204,13 +231,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                       >
                         Edit
                       </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        Delete
-                      </MenuItem>
+                      <MenuItem onClick={deleteHandler}>Delete</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -243,94 +264,148 @@ function AddTask({
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   taskProp?: Task;
 }) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [task, setTask] = useState({
     title: taskProp?.title || "",
     description: taskProp?.description || "",
     deadline: taskProp?.deadline || new Date(),
   });
 
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [successText, setSuccessText] = React.useState("");
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
+
   const onChange = (e: any) => {
     setTask({ ...task, [e.target.name]: e.target.value });
   };
 
+  console.log(taskProp);
+
   const onSubmit = async () => {
     try {
       if (taskProp) {
-        await console.log("Edit ", task);
+        console.log("Edit", task.title);
+        if (session?.user.sub) {
+          const res = await editTask({
+            ...task,
+            user_id: session?.user.sub,
+            completed: taskProp.completed,
+            id: taskProp.id,
+          });
+          if (res != null) {
+            setSuccessText("Edit Task Completed!");
+            setSnackOpen(true);
+            setOpen(false);
+            router.refresh();
+          }
+        }
       } else {
-        await console.log("Add ", task);
+        console.log("Add", task.title);
+        if (session?.user.sub) {
+          const res = await addTask({
+            ...task,
+            user_id: session?.user.sub,
+          });
+          if (res != null) {
+            setSuccessText("Add Task Completed!");
+            setSnackOpen(true);
+            setOpen(false);
+            router.refresh();
+          }
+        }
       }
     } catch (error) {}
   };
 
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={() => setOpen(false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}
-    >
-      <Fade in={open}>
-        <Box
-          sx={{
-            position: "absolute" as "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "50%",
-            bgcolor: "background.paper",
-            border: "1px solid #3f93e8",
-            boxShadow: 24,
-            p: 4,
-          }}
-          className="rounded-xl"
-        >
-          <form action={onSubmit} className="flex flex-col gap-4">
-            <Typography variant="h6" className="mb-2">
-              {taskProp ? "Edit Task" : "Add Task"}
-            </Typography>
-            <TextField
-              id="title"
-              name="title"
-              label="Title"
-              onChange={onChange}
-              value={task.title}
-              fullWidth
-              sx={{ display: "block" }}
-            />
-            <TextField
-              id="description"
-              name="description"
-              label="Description"
-              onChange={onChange}
-              value={task.description}
-              fullWidth
-              sx={{ display: "block" }}
-              multiline
-              minRows={2}
-            />
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DateTimePicker
-                label="Basic date time picker"
-                value={dayjs(task.deadline)}
-                onChange={(newValue) => {
-                  if (newValue != null) {
-                    setTask({ ...task, deadline: newValue.toDate() });
-                  }
-                }}
+    <Fragment>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={() => setOpen(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box
+            sx={{
+              position: "absolute" as "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              bgcolor: "background.paper",
+              border: "1px solid #3f93e8",
+              boxShadow: 24,
+              p: 4,
+            }}
+            className="rounded-xl"
+          >
+            <form action={onSubmit} className="flex flex-col gap-4">
+              <Typography variant="h6" className="mb-2">
+                {taskProp ? "Edit Task" : "Add Task"}
+              </Typography>
+              <TextField
+                id="title"
+                name="title"
+                label="Title"
+                onChange={onChange}
+                value={task.title}
+                fullWidth
+                sx={{ display: "block" }}
               />
-            </LocalizationProvider>
-            <Button type="submit">{taskProp ? "Edit Task" : "Add Task"}</Button>
-          </form>
-        </Box>
-      </Fade>
-    </Modal>
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                onChange={onChange}
+                value={task.description}
+                fullWidth
+                sx={{ display: "block" }}
+                multiline
+                minRows={2}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label="Basic date time picker"
+                  value={dayjs(task.deadline)}
+                  onChange={(newValue) => {
+                    if (newValue != null) {
+                      setTask({ ...task, deadline: newValue.toDate() });
+                    }
+                  }}
+                />
+              </LocalizationProvider>
+              <Button type="submit">
+                {taskProp ? "Edit Task" : "Add Task"}
+              </Button>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {successText}
+        </Alert>
+      </Snackbar>
+    </Fragment>
   );
 }

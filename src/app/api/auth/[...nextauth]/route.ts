@@ -2,6 +2,7 @@ import { userLogIn } from "@/libs/api/account";
 import NextAuth from "next-auth";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { jwtDecode } from "jwt-decode";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -25,10 +26,14 @@ export const authOptions: AuthOptions = {
         // (i.e., the request IP address)
 
         if (!credentials) return null;
-        const user = userLogIn(credentials.email, credentials.password);
+        const token = await userLogIn(credentials.email, credentials.password);
+        console.log(token);
 
         // If no error and we have user data, return it
-        if (user) {
+        if (token) {
+          const user = jwtDecode(token);
+          console.log(user);
+
           return user;
         }
         // Return null if user data could not be retrieved

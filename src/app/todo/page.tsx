@@ -2,11 +2,14 @@ import { getAllTasks } from "@/libs/api/task";
 import HabitList from "./component/HabitList";
 import RoutineList from "./component/RoutineList";
 import TaskList from "./component/TaskList";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function page() {
-  const allTasks = await getAllTasks();
+  const session = await getServerSession(authOptions);
+  console.log(session);
 
-  console.log(allTasks);
+  const allTasks = await getAllTasks(session?.user.sub ?? "");
 
   return (
     <div className="w-full flex flex-row justify-around gap-4">
@@ -14,7 +17,7 @@ export default async function page() {
         <RoutineList />
         <HabitList />
       </div>
-      <TaskList taskType={"normal"} />
+      <TaskList tasks={allTasks} />
     </div>
   );
 }
