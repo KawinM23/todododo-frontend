@@ -17,7 +17,7 @@ export default function RegisterForm() {
   const onSubmit = async () => {
     try {
       console.log(registerData);
-      await register(registerData);
+      const res = await register(registerData);
     } catch (error) {}
   };
   return (

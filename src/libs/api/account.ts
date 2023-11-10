@@ -9,7 +9,7 @@ export async function register({
 }) {
   try {
     const res = await fetch(
-      process.env.ACCOUNT_SERVICE_API_ROUTE + "/register",
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE + "/register",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,13 +32,18 @@ export async function register({
 
 export async function userLogIn(email: string, password: string) {
   try {
-    const res = await fetch(process.env.ACCOUNT_SERVICE_API_ROUTE + "/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, password: password }),
-    });
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE + "/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password }),
+      }
+    );
     if (res.ok) {
-      return await res.json();
+      return "Success";
+    } else {
+      return "Error";
     }
   } catch (e) {
     console.error("Error ", e);
