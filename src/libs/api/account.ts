@@ -21,7 +21,9 @@ export async function register({
       }
     );
     if (res.ok) {
-      return await res.json();
+      return "Success";
+    } else {
+      return "Error";
     }
 
     return res.json();
@@ -41,9 +43,7 @@ export async function userLogIn(email: string, password: string) {
       }
     );
     if (res.ok) {
-      return "Success";
-    } else {
-      return "Error";
+      return res.json();
     }
   } catch (e) {
     console.error("Error ", e);
