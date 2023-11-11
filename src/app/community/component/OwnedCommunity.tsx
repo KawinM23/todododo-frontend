@@ -13,11 +13,18 @@ import {
 } from "@mui/material";
 import { Fragment, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { CommunityApi } from "@/libs/interface/community";
 
-export default function OwnedCommunity() {
+export default function OwnedCommunity({
+  myCommunities,
+}: {
+  myCommunities: CommunityApi[];
+}) {
   return (
     <div className="grid grid-cols-3 gap-5">
-      <CommunityCard />
+      {myCommunities.map((community: CommunityApi) => (
+        <CommunityCard key={community.id} community={community} />
+      ))}
     </div>
   );
 }
@@ -37,7 +44,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
-function CommunityCard() {
+function CommunityCard({ community }: { community: CommunityApi }) {
   const [expanded, setExpanded] = useState(false);
 
   const handleExpandClick = () => {
@@ -49,22 +56,18 @@ function CommunityCard() {
       <Fragment>
         <CardContent>
           <Typography variant="h5" component="div">
-            Community1
+            {community.name}
           </Typography>
 
-          <Typography variant="body2">
-            We're the most active community
-          </Typography>
+          <Typography variant="body2">{community.description}</Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <Button>Edit</Button>
           <Button>Delete</Button>
           <ExpandMore
             expand={expanded}
             onClick={handleExpandClick}
             aria-expanded={expanded}
-            aria-label="show more"
-          >
+            aria-label="show more">
             <ExpandMoreIcon />
           </ExpandMore>
         </CardActions>

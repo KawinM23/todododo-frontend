@@ -27,12 +27,14 @@ export const authOptions: AuthOptions = {
 
         if (!credentials) return null;
         const token = await userLogIn(credentials.email, credentials.password);
-        console.log(token);
+        // console.log(token);
 
         // If no error and we have user data, return it
         if (token) {
-          const user = jwtDecode(token);
-          console.log(user);
+          const user: any = jwtDecode(token);
+          user.accessToken = token;
+
+          //console.log(user);
 
           return user;
         }
@@ -44,10 +46,12 @@ export const authOptions: AuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
+      //console.log(token, user);
       return { ...token, ...user };
     },
     async session({ session, token, user }) {
       session.user = token as any;
+
       return session;
     },
   },

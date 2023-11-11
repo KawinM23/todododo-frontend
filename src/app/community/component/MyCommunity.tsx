@@ -1,5 +1,6 @@
 "use client";
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -7,15 +8,22 @@ import {
   Fade,
   FormControlLabel,
   Modal,
+  Snackbar,
   Tab,
   Tabs,
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import OwnedCommunity from "./OwnedCommunity";
 import JoinedCommunity from "./JoinedCommunity";
 import { CheckBox } from "@mui/icons-material";
+import { useSession } from "next-auth/react";
+import { createCommu } from "@/libs/api/community";
+
+import React from "react";
+import { useRouter } from "next/navigation";
+import { CommunityApi } from "@/libs/interface/community";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,7 +52,13 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
-export default function CommunityList() {
+export default function CommunityList({
+  myCommunities,
+  joinedCommunities,
+}: {
+  myCommunities: CommunityApi[];
+  joinedCommunities: CommunityApi[];
+}) {
   const [tab, setTab] = useState(0);
   const [openAddCommunity, setAddCommunity] = useState(false);
 
@@ -76,10 +90,10 @@ export default function CommunityList() {
         </Box>
 
         <CustomTabPanel value={tab} index={0}>
-          <JoinedCommunity />
+          <JoinedCommunity communities={joinedCommunities} />
         </CustomTabPanel>
         <CustomTabPanel value={tab} index={1}>
-          <OwnedCommunity />
+          <OwnedCommunity myCommunities={myCommunities} />
         </CustomTabPanel>
       </Box>
     </div>
@@ -90,6 +104,11 @@ function AddCommunity({
 }: {
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 }) {
+  const { data: session } = useSession();
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [successText, setSuccessText] = React.useState("");
+  const router = useRouter();
+
   const [community, setCommunity] = useState<Community>({
     title: "",
     description: "",
@@ -105,76 +124,109 @@ function AddCommunity({
 
   const onSubmit = async () => {
     console.log(community);
+
+    try {
+      const res = await createCommu({
+        ...community,
+        token: session?.user.accessToken,
+      });
+      //console.log("res", res);
+      if (res != null) {
+        setSuccessText("Add Community Completed!");
+        setSnackOpen(true);
+        setOpen(false);
+        router.refresh();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
   };
 
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={() => setOpen(false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}>
-      <Fade in={open}>
-        <Box
-          sx={{
-            position: "absolute" as "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "50%",
-            bgcolor: "background.paper",
-            border: "1px solid #3f93e8",
-            boxShadow: 24,
-            p: 4,
-          }}
-          className="rounded-xl">
-          <form action={onSubmit} className="flex flex-col gap-4">
-            <Typography variant="h6" className="mb-2">
-              Add Community
-            </Typography>
-            <TextField
-              id="title"
-              name="title"
-              label="Title"
-              onChange={onChange}
-              value={community.title === "" ? null : community.title}
-              fullWidth
-              sx={{ display: "block" }}
-            />
-            <TextField
-              id="description"
-              name="description"
-              label="Description"
-              onChange={onChange}
-              value={
-                community.description === "" ? null : community.description
-              }
-              fullWidth
-              sx={{ display: "block" }}
-              multiline
-              minRows={2}
-            />
-            <FormControlLabel
-              label="Private"
-              control={
-                <Checkbox
-                  id="is_private"
-                  name="is_private"
-                  onChange={onChange}
-                />
-              }
-            />
+    <Fragment>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={() => setOpen(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}>
+        <Fade in={open}>
+          <Box
+            sx={{
+              position: "absolute" as "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              bgcolor: "background.paper",
+              border: "1px solid #3f93e8",
+              boxShadow: 24,
+              p: 4,
+            }}
+            className="rounded-xl">
+            <form action={onSubmit} className="flex flex-col gap-4">
+              <Typography variant="h6" className="mb-2">
+                Add Community
+              </Typography>
+              <TextField
+                id="title"
+                name="title"
+                label="Title"
+                onChange={onChange}
+                value={community.title === "" ? null : community.title}
+                fullWidth
+                sx={{ display: "block" }}
+              />
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                onChange={onChange}
+                value={
+                  community.description === "" ? null : community.description
+                }
+                fullWidth
+                sx={{ display: "block" }}
+                multiline
+                minRows={2}
+              />
+              <FormControlLabel
+                label="Private"
+                control={
+                  <Checkbox
+                    id="is_private"
+                    name="is_private"
+                    onChange={onChange}
+                  />
+                }
+              />
 
-            <Button type="submit">Add Community</Button>
-          </form>
-        </Box>
-      </Fade>
-    </Modal>
+              <Button type="submit">Add Community</Button>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {successText}
+        </Alert>
+      </Snackbar>
+    </Fragment>
   );
 }
