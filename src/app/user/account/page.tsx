@@ -8,8 +8,8 @@ export default async function page() {
     return (
       <main className="center-container h-screen">
         <div>
-          <p>Username: {session?.user.name}</p>
-          <p>Email: {session?.user.email}</p>
+          {/* <p>Username: {session?.user.name}</p>
+          <p>Email: {session?.user.email}</p> */}
         </div>
       </main>
     );

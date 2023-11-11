@@ -75,7 +75,7 @@ export default function Sidebar() {
   const [open, setOpen] = React.useState(false);
   const session = useSession();
   const login = session.status == "authenticated";
-  console.log(session);
+  // console.log(session);
 
   return (
     <Drawer variant="permanent" open={open}>

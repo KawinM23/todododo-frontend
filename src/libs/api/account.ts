@@ -43,7 +43,7 @@ export async function userLogIn(email: string, password: string) {
       }
     );
     if (res.ok) {
-      return res.json();
+      return res.text();
     }
   } catch (e) {
     console.error("Error ", e);

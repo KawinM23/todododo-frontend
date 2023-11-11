@@ -1,11 +1,11 @@
-export async function getAllTasks(user_id: string) {
+export async function getAllHabits(user_id: string) {
   try {
     const res = await fetch(
-      process.env.TASK_SERVICE_API_ROUTE + "/task?user_id=" + user_id,
+      process.env.TASK_SERVICE_API_ROUTE + "/habit?user_id=" + user_id,
       {
         method: "GET",
         cache: "no-store",
-        next: { tags: ["task"] },
+        next: { tags: ["habit"] },
       }
     );
 
@@ -15,29 +15,26 @@ export async function getAllTasks(user_id: string) {
   }
 }
 
-export async function addTask({
+export async function addHabit({
   title,
   description,
-  deadline,
   user_id,
 }: {
   title: string;
   description: string;
-  deadline: Date;
   user_id: string;
 }) {
-  console.log("Add Task ", title);
+  console.log("Add Habit", title);
   try {
     const res = await fetch(
-      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task",
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/habit",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title,
           description: description,
-          deadline: deadline,
-          completed: false,
+          score: 0,
           user_id: user_id,
         }),
       }
@@ -52,33 +49,30 @@ export async function addTask({
   }
 }
 
-export async function editTask({
+export async function editHabit({
   title,
   description,
-  deadline,
-  completed,
+  score,
   user_id,
   id,
 }: {
   title: string;
   description: string;
-  deadline: Date;
-  completed: boolean;
+  score: number;
   user_id: string;
   id: string;
 }) {
-  console.log("Edit Task", title);
+  console.log("Edit Habit", title);
   try {
     const res = await fetch(
-      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task/" + id,
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/habit/" + id,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title,
           description: description,
-          deadline: deadline,
-          completed: completed,
+          score: score,
           user_id: user_id,
         }),
       }
@@ -93,15 +87,15 @@ export async function editTask({
   }
 }
 
-export async function completeTask(id: string) {
+export async function adjustScoreHabit(id: string, increase: boolean) {
   try {
     const res = await fetch(
       process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE +
-        "/task/" +
+        "/habit/" +
         id +
-        "/complete",
+        (increase ? "/increasescore" : "/decreasescore"),
       {
-        method: "PATCH",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -115,10 +109,10 @@ export async function completeTask(id: string) {
   }
 }
 
-export async function deleteTask(id: string) {
+export async function deleteHabit(id: string) {
   try {
     const res = await fetch(
-      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task/" + id,
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/habit/" + id,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

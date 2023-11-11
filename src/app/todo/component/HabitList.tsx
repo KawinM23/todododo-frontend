@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Backdrop,
   Box,
   Button,
@@ -15,6 +16,7 @@ import {
   Modal,
   Paper,
   Popper,
+  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -25,17 +27,20 @@ import {
   Typography,
 } from "@mui/material";
 
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import dayjs from "dayjs";
-
 //Icons
-import CheckIcon from "@mui/icons-material/Check";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import React from "react";
+import { useSession } from "next-auth/react";
+
+import {
+  addHabit,
+  adjustScoreHabit,
+  deleteHabit,
+  editHabit,
+} from "@/libs/api/habit";
+import { useRouter } from "next/navigation";
 interface Habit {
   id: string;
   title: string;
@@ -68,7 +73,7 @@ const rows = [
   createData("000006", "Habit02", "Hello"),
 ];
 
-export default function HabitList() {
+export default function HabitList({ habits }: { habits: Habit[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
@@ -85,12 +90,12 @@ export default function HabitList() {
               <TableCell />
               <TableCell>Title</TableCell>
               <TableCell>Score</TableCell>
-              <TableCell>Action</TableCell>
+              <TableCell sx={{ textAlign: "center" }}>Action</TableCell>
               <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {habits.map((row) => (
               <Row key={row.id} row={row} />
             ))}
           </TableBody>
@@ -101,6 +106,7 @@ export default function HabitList() {
 }
 
 function Row(props: { row: ReturnType<typeof createData> }) {
+  const router = useRouter();
   const { row } = props;
   const [expand, setExpand] = useState(false);
   const [openEditTask, setOpenEditTask] = useState(false);
@@ -115,6 +121,34 @@ function Row(props: { row: ReturnType<typeof createData> }) {
 
     prevOpen.current = open;
   }, [open]);
+
+  const increaseScore = async () => {
+    try {
+      await adjustScoreHabit(row.id, true);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const decreaseScore = async () => {
+    try {
+      await adjustScoreHabit(row.id, false);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteHandler = async () => {
+    try {
+      setOpen(false);
+      await deleteHabit(row.id);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -136,8 +170,8 @@ function Row(props: { row: ReturnType<typeof createData> }) {
         <TableCell>{row.score}</TableCell>
         <TableCell sx={{ width: 100 }}>
           <ButtonGroup aria-label="outlined primary button group">
-            <Button>+</Button>
-            <Button>-</Button>
+            <Button onClick={increaseScore}>+</Button>
+            <Button onClick={decreaseScore}>-</Button>
           </ButtonGroup>
         </TableCell>
         <TableCell sx={{ width: 70 }}>
@@ -149,7 +183,6 @@ function Row(props: { row: ReturnType<typeof createData> }) {
             aria-haspopup="true"
             onClick={() => {
               setOpen((prevOpen) => !prevOpen);
-              console.log();
             }}
           >
             <MoreVertIcon fontSize="inherit" />
@@ -190,13 +223,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                       >
                         Edit
                       </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setOpen(false);
-                        }}
-                      >
-                        Delete
-                      </MenuItem>
+                      <MenuItem onClick={deleteHandler}>Delete</MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -226,11 +253,28 @@ function AddTask({
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   taskProp?: Habit;
 }) {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [task, setTask] = useState({
     title: taskProp?.title || "",
     description: taskProp?.description || "",
     score: taskProp?.score || 0,
   });
+
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [successText, setSuccessText] = React.useState("");
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
 
   const onChange = (e: any) => {
     setTask({ ...task, [e.target.name]: e.target.value });
@@ -239,72 +283,104 @@ function AddTask({
   const onSubmit = async () => {
     try {
       if (taskProp) {
-        await console.log("Edit ", task);
+        console.log("Edit", task.title);
+        if (session?.user.sub) {
+          const res = await editHabit({
+            ...task,
+            user_id: session?.user.sub,
+            id: taskProp.id,
+          });
+          if (res != null) {
+            setSuccessText("Edit Habit Completed!");
+            setSnackOpen(true);
+            setOpen(false);
+            router.refresh();
+          }
+        }
       } else {
-        await console.log("Add ", task);
+        console.log("Add", task.title);
+        if (session?.user.sub) {
+          const res = await addHabit({
+            ...task,
+            user_id: session?.user.sub,
+          });
+          if (res != null) {
+            setSuccessText("Add Habit Completed!");
+            setSnackOpen(true);
+            setOpen(false);
+            router.refresh();
+          }
+        }
       }
     } catch (error) {}
   };
 
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={() => setOpen(false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}
-    >
-      <Fade in={open}>
-        <Box
-          sx={{
-            position: "absolute" as "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "50%",
-            bgcolor: "background.paper",
-            border: "1px solid #3f93e8",
-            boxShadow: 24,
-            p: 4,
-          }}
-          className="rounded-xl"
-        >
-          <form action={onSubmit} className="flex flex-col gap-4">
-            <Typography variant="h6" className="mb-2">
-              {taskProp ? "Edit Habit" : "Add Habit"}
-            </Typography>
-            <TextField
-              id="title"
-              name="title"
-              label="Title"
-              onChange={onChange}
-              value={task.title}
-              fullWidth
-              sx={{ display: "block" }}
-            />
-            <TextField
-              id="description"
-              name="description"
-              label="Description"
-              onChange={onChange}
-              value={task.description}
-              fullWidth
-              sx={{ display: "block" }}
-              multiline
-              minRows={2}
-            />
-            <Button type="submit">
-              {taskProp ? "Edit Habit" : "Add Habit"}
-            </Button>
-          </form>
-        </Box>
-      </Fade>
-    </Modal>
+    <Fragment>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={() => setOpen(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box
+            sx={{
+              position: "absolute" as "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              bgcolor: "background.paper",
+              border: "1px solid #3f93e8",
+              boxShadow: 24,
+              p: 4,
+            }}
+            className="rounded-xl"
+          >
+            <form action={onSubmit} className="flex flex-col gap-4">
+              <Typography variant="h6" className="mb-2">
+                {taskProp ? "Edit Habit" : "Add Habit"}
+              </Typography>
+              <TextField
+                id="title"
+                name="title"
+                label="Title"
+                onChange={onChange}
+                value={task.title}
+                fullWidth
+                sx={{ display: "block" }}
+              />
+              <TextField
+                id="description"
+                name="description"
+                label="Description"
+                onChange={onChange}
+                value={task.description}
+                fullWidth
+                sx={{ display: "block" }}
+                multiline
+                minRows={2}
+              />
+              <Button type="submit">
+                {taskProp ? "Edit Habit" : "Add Habit"}
+              </Button>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {successText}
+        </Alert>
+      </Snackbar>
+    </Fragment>
   );
 }
