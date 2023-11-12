@@ -1,3 +1,4 @@
+import HabitGraph from "./component/HabitGraph";
 import StreakVisual, { StreakData } from "./component/StreakVisual";
 
 export default function page() {
@@ -23,10 +24,13 @@ export default function page() {
     repeat: "daily",
   };
 
+  const habitData = [1, 1.01, 1.02, 1.03, 0.99, 0.98];
+
   return (
     <main>
       Summary
       <StreakVisual data={streakData} />
+      <HabitGraph data={habitData} />
     </main>
   );
 }

@@ -32,7 +32,7 @@ export default function StreakVisual({ data }: { data: StreakData }) {
   const monthly = data.repeat == "monthly";
 
   return (
-    <div className={`h-[500px] w-[90%] py-10 mx-auto`}>
+    <div className={`h-[300px] w-[90%] py-10 mx-auto`}>
       {data.streak.map((eachStreak, index) => {
         return (
           <Fragment key={index}>
