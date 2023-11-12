@@ -27,7 +27,7 @@ export default function JoinedCommunity({
           <CommunityCard key={community.id} community={community} />
         ))
       ) : (
-        <Typography>Not joined any community.</Typography>
+        <Typography>Not joined any community</Typography>
       )}
     </div>
   );
