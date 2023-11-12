@@ -1,20 +1,21 @@
 "use client";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import { signIn, useSession } from "next-auth/react";
-import Image from "next/image";
+
+import "./style.css";
+import Link from "next/link";
 
 export default function Home() {
   const { data: session } = useSession();
 
   return (
     <main className="center-container h-[90vh]">
-      <Typography className="text-2xl font-bold mb-5">
-        Welcome to TODODODODO
-      </Typography>
-      <Typography className="mb-5">Todo application</Typography>
+      <div className="growing"></div>
+      <h1 className="text-2xl font-bold my-5">Welcome to TODODODODO</h1>
+      <h2 className="text-xl mb-5">Todo application</h2>
       {session ? (
         <div>
-          <Typography>Hi, {session.user.username}!</Typography>
+          <p>Hi, {session.user.username}!</p>
         </div>
       ) : (
         <div className="flex flex-row gap-5">
@@ -31,6 +32,12 @@ export default function Home() {
           </Button>
         </div>
       )}
+      <Link
+        href="https://freefrontend.com/css-animation-examples/"
+        className="absolute bottom-2 right-2"
+      >
+        Animation Credit: Temani Afif October 7, 2021
+      </Link>
     </main>
   );
 }
