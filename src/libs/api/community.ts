@@ -93,6 +93,25 @@ export async function leavingCommu(token: any, id: string) {
     console.log(err);
   }
 }
+export async function deleteCommu(token: any, id: string) {
+  console.log(token, id);
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE + `/community/${id}`,
+      {
+        method: "DELETE",
+        cache: "no-store",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+}
 export async function createCommu({
   title,
   description,
@@ -126,6 +145,73 @@ export async function createCommu({
     } else {
       return null;
     }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getInviteCode(token: string, id: string) {
+  //console.log(token);
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
+        `/community/${id}/invite`,
+      {
+        method: "GET",
+        cache: "no-store",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function createInviteCode(token: any, id: string) {
+  //console.log(token);
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
+        `/community/${id}/invite`,
+      {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({
+          expired_in: 99999,
+        }),
+      }
+    );
+
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function joinWithInviteCode(token: any, code: string) {
+  //console.log(token);
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
+        `/community/invite/${code}`,
+      {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    return res.json();
   } catch (err) {
     console.log(err);
   }
