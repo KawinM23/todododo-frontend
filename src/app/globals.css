@@ -5,3 +5,7 @@
 .center-container {
   @apply flex flex-col justify-center items-center;
 }
+
+button.MuiButton-contained {
+  @apply bg-[#0060df];
+}
