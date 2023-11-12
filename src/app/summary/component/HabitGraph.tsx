@@ -1,5 +1,6 @@
 "use client";
 
+import { Paper, Typography } from "@mui/material";
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
 export default function HabitGraph({ data }: { data: any }) {
@@ -11,9 +12,6 @@ export default function HabitGraph({ data }: { data: any }) {
 
     // ECharts configuration
     const option = {
-      title: {
-        text: "Habit",
-      },
       tooltip: {
         trigger: "axis",
       },
@@ -71,8 +69,8 @@ export default function HabitGraph({ data }: { data: any }) {
   }, [data]);
 
   return (
-    <div>
+    <Paper className={`mb-4 p-3`}>
       <div ref={echartsContainerRef} className="w-full my-5 h-[400px]" />
-    </div>
+    </Paper>
   );
 }
