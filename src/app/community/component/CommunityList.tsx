@@ -1,6 +1,6 @@
 "use client";
 
-import { joiningCommu } from "@/libs/api/community";
+import { joinWithInviteCode, joiningCommu } from "@/libs/api/community";
 import { CommunityApi } from "@/libs/interface/community";
 import {
   Alert,
@@ -111,60 +111,92 @@ function JoinCommunity({
 }: {
   openState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 }) {
-  const [communityCode, setCommunityCode] = useState<String>();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [successText, setSuccessText] = React.useState("Joined Community!");
+  const [communityCode, setCommunityCode] = useState<string>("");
   const onChange = (e: any) => {
     setCommunityCode(e.target.value);
   };
 
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
+
   const onSubmit = async () => {
-    console.log(communityCode);
+    const res = await joinWithInviteCode(
+      session?.user.accessToken,
+      communityCode
+    );
+
+    if (res) {
+      setSnackOpen(true);
+      setOpen(false);
+
+      router.refresh();
+    }
   };
 
   return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={() => setOpen(false)}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}>
-      <Fade in={open}>
-        <Box
-          sx={{
-            position: "absolute" as "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "50%",
-            bgcolor: "background.paper",
-            border: "1px solid #3f93e8",
-            boxShadow: 24,
-            p: 4,
-          }}
-          className="rounded-xl">
-          <form action={onSubmit} className="flex flex-col gap-4">
-            <Typography variant="h6" className="mb-2">
-              Add Community
-            </Typography>
-            <TextField
-              id="title"
-              name="title"
-              label="Community Code"
-              onChange={onChange}
-              value={communityCode ? null : communityCode}
-              fullWidth
-              sx={{ display: "block" }}
-            />
+    <Fragment>
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={() => setOpen(false)}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}>
+        <Fade in={open}>
+          <Box
+            sx={{
+              position: "absolute" as "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50%",
+              bgcolor: "background.paper",
+              border: "1px solid #3f93e8",
+              boxShadow: 24,
+              p: 4,
+            }}
+            className="rounded-xl">
+            <form action={onSubmit} className="flex flex-col gap-4">
+              <Typography variant="h6" className="mb-2">
+                Add Community
+              </Typography>
+              <TextField
+                id="title"
+                name="title"
+                label="Community Code"
+                onChange={onChange}
+                value={communityCode ? null : communityCode}
+                fullWidth
+                sx={{ display: "block" }}
+              />
 
-            <Button type="submit">Add Community</Button>
-          </form>
-        </Box>
-      </Fade>
-    </Modal>
+              <Button type="submit">Add Community</Button>
+            </form>
+          </Box>
+        </Fade>
+      </Modal>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert severity="success" sx={{ width: "100%" }} onClose={handleClose}>
+          {successText}
+        </Alert>
+      </Snackbar>
+    </Fragment>
   );
 }

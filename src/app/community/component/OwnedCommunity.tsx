@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alert,
   Button,
   Card,
   CardActions,
@@ -8,12 +9,21 @@ import {
   Collapse,
   IconButton,
   IconButtonProps,
+  Snackbar,
   Typography,
   styled,
 } from "@mui/material";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { CommunityApi } from "@/libs/interface/community";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React from "react";
+import {
+  createInviteCode,
+  deleteCommu,
+  getInviteCode,
+} from "@/libs/api/community";
 
 export default function OwnedCommunity({
   myCommunities,
@@ -46,9 +56,59 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 
 function CommunityCard({ community }: { community: CommunityApi }) {
   const [expanded, setExpanded] = useState(false);
-
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [successText, setSuccessText] = React.useState("Deleted Community!");
+  const [inviteCode, setInviteCode] = React.useState<string>();
+  useEffect(() => {
+    async function fetchData() {
+      if (session) {
+        const res = await getInviteCode(session.user.accessToken, community.id);
+        if (res.length >= 1) {
+          setInviteCode(res[0].id);
+        } else {
+          setInviteCode("no");
+        }
+      }
+    }
+    if (community.is_private) {
+      fetchData();
+    }
+  }, [session]);
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackOpen(false);
+  };
+
+  const deletingCommu = async (id: string) => {
+    const res = await deleteCommu(session?.user.accessToken, id);
+
+    if (res?.ok) {
+      setSnackOpen(true);
+
+      router.refresh();
+    }
+  };
+
+  const generateInviteCode = async () => {
+    const res = await createInviteCode(session?.user.accessToken, community.id);
+    console.log(res);
+    if (res) {
+      setSnackOpen(true);
+      setSuccessText("Generated Invite Code!");
+
+      router.refresh();
+    }
   };
 
   return (
@@ -62,19 +122,48 @@ function CommunityCard({ community }: { community: CommunityApi }) {
           <Typography variant="body2">{community.description}</Typography>
         </CardContent>
         <CardActions disableSpacing>
-          <Button>Delete</Button>
-          <ExpandMore
-            expand={expanded}
-            onClick={handleExpandClick}
-            aria-expanded={expanded}
-            aria-label="show more">
-            <ExpandMoreIcon />
-          </ExpandMore>
+          <Button
+            onClick={() => {
+              deletingCommu(community.id);
+            }}>
+            Delete
+          </Button>
+          {community.is_private ? (
+            <ExpandMore
+              expand={expanded}
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="show more">
+              <ExpandMoreIcon />
+            </ExpandMore>
+          ) : (
+            <></>
+          )}
         </CardActions>
+        <Snackbar
+          open={snackOpen}
+          autoHideDuration={3000}
+          onClose={handleClose}>
+          <Alert
+            severity="success"
+            sx={{ width: "100%" }}
+            onClose={handleClose}>
+            {successText}
+          </Alert>
+        </Snackbar>
       </Fragment>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <Typography>Code</Typography>
+          {inviteCode === "no" ? (
+            <Button
+              onClick={generateInviteCode}
+              className="text-xs"
+              variant="outlined">
+              Generate Invite Code
+            </Button>
+          ) : (
+            <Typography>Invite Code: {inviteCode}</Typography>
+          )}
         </CardContent>
       </Collapse>
     </Card>
