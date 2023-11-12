@@ -22,9 +22,13 @@ export default function JoinedCommunity({
 }) {
   return (
     <div className="grid grid-cols-3 gap-5">
-      {communities.map((community: CommunityApi) => (
-        <CommunityCard key={community.id} community={community} />
-      ))}
+      {communities.length >= 0 ? (
+        communities.map((community: CommunityApi) => (
+          <CommunityCard key={community.id} community={community} />
+        ))
+      ) : (
+        <Typography>Not joined any community.</Typography>
+      )}
     </div>
   );
 }

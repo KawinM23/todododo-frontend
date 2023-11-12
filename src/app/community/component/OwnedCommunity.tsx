@@ -32,9 +32,13 @@ export default function OwnedCommunity({
 }) {
   return (
     <div className="grid grid-cols-3 gap-5">
-      {myCommunities.map((community: CommunityApi) => (
-        <CommunityCard key={community.id} community={community} />
-      ))}
+      {myCommunities.length > 0 ? (
+        myCommunities.map((community: CommunityApi) => (
+          <CommunityCard key={community.id} community={community} />
+        ))
+      ) : (
+        <Typography>Not owned any community</Typography>
+      )}
     </div>
   );
 }
