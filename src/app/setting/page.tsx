@@ -1,14 +1,17 @@
-import { TextField } from "@mui/material";
+import { getMyWebhook } from "@/libs/api/notification";
+import Account from "./component/Account";
+import Setting from "./component/Setting";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-export default function page() {
+export default async function page() {
+  const session = await getServerSession(authOptions);
+  const webhook = await getMyWebhook(session?.user.sub);
+
   return (
     <main className="center-container flex-col h-[80vh]">
-      <div>Account </div>
-      Setting
-      <div>
-        Webhook Token <TextField></TextField>
-      </div>
-      Save
+      <Account />
+      <Setting myWebhook={webhook} />
     </main>
   );
 }

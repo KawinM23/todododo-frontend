@@ -34,7 +34,6 @@ export const authOptions: AuthOptions = {
 
         if (!credentials) return null;
         const token = await userLogIn(credentials.email, credentials.password);
-        console.log(token);
 
         // If no error and we have user data, return it
         if (token) {
@@ -55,6 +54,7 @@ export const authOptions: AuthOptions = {
     },
     async session({ session, token, user }) {
       session.user = token as any;
+
       return session;
     },
   },
