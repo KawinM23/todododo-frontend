@@ -6,6 +6,7 @@ declare module "next-auth" {
       sub: string;
       username: string;
       email: string;
+      accessToken: string;
     };
   }
 }
