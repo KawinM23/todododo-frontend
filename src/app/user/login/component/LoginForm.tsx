@@ -1,34 +1,34 @@
 "use client";
-import { register } from "@/libs/api/account";
+
 import { Button, TextField } from "@mui/material";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-export default function RegisterForm() {
-  const [registerData, setRegisterData] = useState({
-    username: "",
+export default function LoginForm(props: {
+  searchParams?: Record<"callbackUrl" | "error", string>;
+}) {
+  const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
   const onChange = (e: any) => {
-    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
   const onSubmit = async () => {
     try {
-      console.log(registerData);
-      const res = await register(registerData);
+      console.log(loginData);
+      await signIn("credentials", {
+        email: loginData.email,
+        password: loginData.password,
+        redirect: true,
+        callbackUrl: props.searchParams?.callbackUrl ?? "/",
+      });
     } catch (error) {}
   };
   return (
     <form className="flex flex-col gap-3" action={onSubmit}>
-      <TextField
-        id="username"
-        name="username"
-        label="Username"
-        variant="standard"
-        onChange={onChange}
-      />
       <TextField
         id="email"
         name="email"
@@ -46,7 +46,7 @@ export default function RegisterForm() {
         onChange={onChange}
       />
       <Button type="submit" variant="contained">
-        Register
+        Login
       </Button>
     </form>
   );

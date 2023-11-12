@@ -1,4 +1,5 @@
 "use client";
+import { Paper, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { Fragment, useEffect, useRef, useState } from "react";
 
@@ -32,7 +33,7 @@ export default function StreakVisual({ data }: { data: StreakData }) {
   const monthly = data.repeat == "monthly";
 
   return (
-    <div className={`h-[500px] w-[90%] py-10 mx-auto`}>
+    <Paper sx={{ display: "inline-block" }} className={`px-6 py-14 mr-4 mb-4`}>
       {data.streak.map((eachStreak, index) => {
         return (
           <Fragment key={index}>
@@ -49,12 +50,12 @@ export default function StreakVisual({ data }: { data: StreakData }) {
               key={index}
             >
               {index == 0 && (
-                <span className="absolute left-0 text-center z-20 w-full bottom-full mb-2">
+                <span className="absolute w-min z-20 bottom-full mb-2 left-0 float-left pl-1 border-l-2">
                   {dayjs(data.startDate).format("DD/MM/YYYY")}
                 </span>
               )}
               {index == data.streak.length - 1 && (
-                <span className="absolute right-0 text-center z-20 w-full top-full mt-2">
+                <span className="absolute w-min z-20 top-full mt-2 right-0 float-right pr-1 border-r-2">
                   {dayjs(data.endDate).format("DD/MM/YYYY")}
                 </span>
               )}
@@ -66,6 +67,6 @@ export default function StreakVisual({ data }: { data: StreakData }) {
           </Fragment>
         );
       })}
-    </div>
+    </Paper>
   );
 }

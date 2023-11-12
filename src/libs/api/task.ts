@@ -1,4 +1,7 @@
 export async function getAllTasks(user_id: string) {
+  if (user_id == "") {
+    return [];
+  }
   try {
     const res = await fetch(
       process.env.TASK_SERVICE_API_ROUTE + "/task?user_id=" + user_id,

@@ -20,6 +20,7 @@ import SummarizeIcon from "@mui/icons-material/Summarize";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PeopleIcon from "@mui/icons-material/People";
+import HomeIcon from "@mui/icons-material/Home";
 import { blue, red } from "@mui/material/colors";
 
 const drawerWidth = 240;
@@ -103,6 +104,31 @@ export default function Sidebar() {
       </DrawerHeader>
       <Divider />
       <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+            }}
+            component="a"
+            href={"/"}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Home"} sx={{ opacity: open ? 1 : 0 }} />
+          </ListItemButton>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
         {[
           ["TODO", "/todo"],
           ["Summary", "/summary"],
@@ -139,30 +165,38 @@ export default function Sidebar() {
         {[
           ["Account", "/user/account"],
           ["Setting", "/setting"],
-        ].map((text, index) => (
-          <ListItem key={text[0]} disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              sx={{
-                minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
-              }}
-              href={text[1]}
-            >
-              <ListItemIcon
+        ].map((text, index) => {
+          if (index == 0) {
+            return null;
+          }
+          return (
+            <ListItem key={text[0]} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
                 sx={{
-                  minWidth: 0,
-                  mr: open ? 3 : "auto",
-                  justifyContent: "center",
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
                 }}
+                href={text[1]}
               >
-                {index == 0 && <AccountCircle />}
-                {index == 1 && <Settings />}
-              </ListItemIcon>
-              <ListItemText primary={text[0]} sx={{ opacity: open ? 1 : 0 }} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  {index == 0 && <AccountCircle />}
+                  {index == 1 && <Settings />}
+                </ListItemIcon>
+                <ListItemText
+                  primary={text[0]}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
       <Divider />
       <List>
@@ -170,7 +204,7 @@ export default function Sidebar() {
           <ListItemButton
             onClick={() => {
               if (login) {
-                signOut();
+                signOut({ callbackUrl: "/" });
               } else {
                 signIn();
               }

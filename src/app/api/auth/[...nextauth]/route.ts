@@ -5,6 +5,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { jwtDecode } from "jwt-decode";
 
 export const authOptions: AuthOptions = {
+  pages: {
+    signIn: "/user/login",
+    //   signOut: '/auth/signout',
+    //   error: '/auth/error', // Error code passed in query string as ?error=
+    //   verifyRequest: '/auth/verify-request', // (used for check email message)
+    //   newUser: '/auth/new-user' // New users will be directed here on first sign in (leave the property out if not of interest)
+  },
   providers: [
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
@@ -36,7 +43,7 @@ export const authOptions: AuthOptions = {
 
           //console.log(user);
 
-          return user;
+          return user as any;
         }
         // Return null if user data could not be retrieved
         return null;
