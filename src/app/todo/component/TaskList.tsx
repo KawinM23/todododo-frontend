@@ -31,6 +31,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs";
+import "dayjs/locale/en-gb";
 
 //Icons
 import CheckIcon from "@mui/icons-material/Check";
@@ -113,13 +114,13 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
   });
 
   return (
-    <div className="w-1/2">
+    <div className="w-1/2 flex flex-col h-full">
       <div className="w-full flex flex-row justify-between">
         <Typography variant="h5">Task Lists</Typography>
         <Button onClick={() => setOpenAddTask(true)}>Add Task</Button>
         <AddTask openState={[openAddTask, setOpenAddTask]} />
       </div>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} className="h-[87vh]">
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -218,7 +219,7 @@ function Row(props: { row: Task }) {
           {row.title}
         </TableCell>
         <TableCell sx={{ width: 250 }}>
-          {dayjs(row.deadline).format("DD/MM/YYYY h:mm A")}
+          {dayjs(row.deadline).format("DD/MM/YYYY  HH:mm ")}
         </TableCell>
         <TableCell sx={{ width: 70 }} align="center">
           <IconButton aria-label="done" size="small" onClick={doneHandler}>
@@ -496,7 +497,10 @@ function AddTask({
                 multiline
                 minRows={2}
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <LocalizationProvider
+                dateAdapter={AdapterDayjs}
+                adapterLocale={"en-gb"}
+              >
                 <DateTimePicker
                   label="Basic date time picker"
                   value={dayjs(task.deadline)}

@@ -84,7 +84,7 @@ export default function RoutineList({ routines }: { routines: Routine[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
-    <div className="h-[42vh]">
+    <div className="h-[44vh]">
       <div className="w-full flex flex-row justify-between">
         <Typography variant="h5">Routine Lists</Typography>
         <Button onClick={() => setOpenAddTask(true)}>Add Routine</Button>

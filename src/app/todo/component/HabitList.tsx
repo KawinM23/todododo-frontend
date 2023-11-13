@@ -78,18 +78,14 @@ const rows = [
 export default function HabitList({ habits }: { habits: Habit[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
-  const sortedHabits = habits.sort((a, b) => {
-    return a.id.localeCompare(b.id);
-  });
-
   return (
-    <div className="h-[42vh]">
+    <div className="h-[44vh]">
       <div className="w-full flex flex-row justify-between">
         <Typography variant="h5">Habit Lists</Typography>
         <Button onClick={() => setOpenAddTask(true)}>Add Habit</Button>
         <AddTask openState={[openAddTask, setOpenAddTask]} />
       </div>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ maxHeight: "90%" }}>
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -101,7 +97,7 @@ export default function HabitList({ habits }: { habits: Habit[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedHabits.map((row) => (
+            {habits.map((row) => (
               <Row key={row.id} row={row} />
             ))}
           </TableBody>
