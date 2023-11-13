@@ -31,7 +31,9 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import React from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+
 import { useSession } from "next-auth/react";
 
 import {
@@ -76,6 +78,10 @@ const rows = [
 export default function HabitList({ habits }: { habits: Habit[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
+  const sortedHabits = habits.sort((a, b) => {
+    return a.id.localeCompare(b.id);
+  });
+
   return (
     <div className="h-[42vh]">
       <div className="w-full flex flex-row justify-between">
@@ -95,7 +101,7 @@ export default function HabitList({ habits }: { habits: Habit[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {habits.map((row) => (
+            {sortedHabits.map((row) => (
               <Row key={row.id} row={row} />
             ))}
           </TableBody>
@@ -151,7 +157,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell sx={{ width: 50 }}>
           {row.description && (
@@ -221,9 +227,13 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                           setOpenEditTask(true);
                         }}
                       >
+                        <EditIcon sx={{ marginRight: 1 }} />
                         Edit
                       </MenuItem>
-                      <MenuItem onClick={deleteHandler}>Delete</MenuItem>
+                      <MenuItem onClick={deleteHandler}>
+                        <DeleteIcon sx={{ marginRight: 1 }} />
+                        Delete
+                      </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
@@ -242,7 +252,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
         </TableCell>
       </TableRow>
       <AddTask openState={[openEditTask, setOpenEditTask]} taskProp={row} />
-    </React.Fragment>
+    </Fragment>
   );
 }
 
@@ -262,8 +272,8 @@ function AddTask({
     score: taskProp?.score || 0,
   });
 
-  const [snackOpen, setSnackOpen] = React.useState(false);
-  const [successText, setSuccessText] = React.useState("");
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [successText, setSuccessText] = useState("");
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,

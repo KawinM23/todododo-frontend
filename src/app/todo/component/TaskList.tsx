@@ -38,6 +38,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 
 import {
   addSubtask,
@@ -271,9 +272,13 @@ function Row(props: { row: Task }) {
                           setOpenEditTask(true);
                         }}
                       >
+                        <EditIcon sx={{ marginRight: 1 }} />
                         Edit
                       </MenuItem>
-                      <MenuItem onClick={deleteHandler}>Delete</MenuItem>
+                      <MenuItem onClick={deleteHandler}>
+                        <DeleteIcon sx={{ marginRight: 1 }} />
+                        Delete
+                      </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>

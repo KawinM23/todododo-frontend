@@ -29,14 +29,14 @@ import {
 } from "@mui/material";
 
 import { Fragment, useState } from "react";
-import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 import CheckIcon from "@mui/icons-material/Check";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import dayjs from "dayjs";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+
 import { useRouter } from "next/navigation";
 import {
   addRoutine,
@@ -219,9 +219,13 @@ function Row(props: { row: Routine }) {
                           setOpenEditTask(true);
                         }}
                       >
+                        <EditIcon sx={{ marginRight: 1 }} />
                         Edit
                       </MenuItem>
-                      <MenuItem onClick={deleteHandler}>Delete</MenuItem>
+                      <MenuItem onClick={deleteHandler}>
+                        <DeleteIcon sx={{ marginRight: 1 }} />
+                        Delete
+                      </MenuItem>
                     </MenuList>
                   </ClickAwayListener>
                 </Paper>
