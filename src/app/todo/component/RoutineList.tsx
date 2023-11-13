@@ -84,7 +84,7 @@ export default function RoutineList({ routines }: { routines: Routine[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
-    <div className="h-[50%]">
+    <div className="h-[42vh]">
       <div className="w-full flex flex-row justify-between">
         <Typography variant="h5">Routine Lists</Typography>
         <Button onClick={() => setOpenAddTask(true)}>Add Routine</Button>
@@ -112,7 +112,7 @@ export default function RoutineList({ routines }: { routines: Routine[] }) {
   );
 }
 
-function Row(props: { row: ReturnType<typeof createData> }) {
+function Row(props: { row: Routine }) {
   const router = useRouter();
   const { row } = props;
   const [expand, setExpand] = useState(false);
@@ -168,7 +168,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
         </TableCell>
         <TableCell>{row.typena}</TableCell>
         <TableCell sx={{ width: 70 }} align="center">
-          <IconButton aria-label="done" size="small">
+          <IconButton aria-label="done" size="small" onClick={doneHandler}>
             <CheckIcon fontSize="inherit" />
           </IconButton>
         </TableCell>
@@ -285,10 +285,8 @@ function AddRoutine({
         if (session?.user.sub) {
           const res = await editRoutine({
             ...task,
-
             user_id: session?.user.sub,
             id: taskProp.id,
-            completed: taskProp.completed,
           });
           if (res != null) {
             setSuccessText("Edit Task Completed!");

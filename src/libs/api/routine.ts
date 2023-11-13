@@ -40,7 +40,6 @@ export async function addRoutine({
           title: title,
           description: description,
           typena: typena,
-          completed: false,
           user_id: user_id,
         }),
       }
@@ -58,13 +57,11 @@ export async function addRoutine({
 export async function editRoutine({
   title,
   description,
-  completed,
   user_id,
   id,
 }: {
   title: string;
   description: string;
-  completed: boolean;
   user_id: string;
   id: string;
 }) {
@@ -78,7 +75,6 @@ export async function editRoutine({
         body: JSON.stringify({
           title: title,
           description: description,
-          completed: completed,
           user_id: user_id,
         }),
       }

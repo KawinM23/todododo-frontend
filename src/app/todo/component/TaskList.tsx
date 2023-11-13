@@ -107,6 +107,10 @@ interface Task {
 export default function TaskList({ tasks }: { tasks: Task[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
+  const sortedTasks = tasks.sort((a, b) => {
+    return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+  });
+
   return (
     <div className="w-1/2">
       <div className="w-full flex flex-row justify-between">
@@ -126,7 +130,7 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {tasks.map((row) => {
+            {sortedTasks.map((row) => {
               if (!row.completed) {
                 return <Row key={row.id} row={row} />;
               }

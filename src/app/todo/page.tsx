@@ -17,7 +17,7 @@ export default async function page() {
 
   return (
     <div className="w-full flex flex-row justify-around gap-4">
-      <div className="w-1/2 h-screen flex flex-col gap-4">
+      <div className="w-1/2 flex flex-col gap-4">
         <RoutineList routines={allRoutines} />
         <HabitList habits={allHabits} />
       </div>

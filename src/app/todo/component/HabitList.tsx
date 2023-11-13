@@ -77,7 +77,7 @@ export default function HabitList({ habits }: { habits: Habit[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
-    <div className="h-[50%]">
+    <div className="h-[42vh]">
       <div className="w-full flex flex-row justify-between">
         <Typography variant="h5">Habit Lists</Typography>
         <Button onClick={() => setOpenAddTask(true)}>Add Habit</Button>
