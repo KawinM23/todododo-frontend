@@ -37,7 +37,6 @@ export async function addHabit({
         body: JSON.stringify({
           title: title,
           description: description,
-          score: 0,
           user_id: user_id,
         }),
       }
@@ -55,13 +54,11 @@ export async function addHabit({
 export async function editHabit({
   title,
   description,
-  score,
   user_id,
   id,
 }: {
   title: string;
   description: string;
-  score: number;
   user_id: string;
   id: string;
 }) {
@@ -75,7 +72,6 @@ export async function editHabit({
         body: JSON.stringify({
           title: title,
           description: description,
-          score: score,
           user_id: user_id,
         }),
       }

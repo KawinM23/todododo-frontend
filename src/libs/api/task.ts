@@ -29,7 +29,7 @@ export async function addTask({
   deadline: Date;
   user_id: string;
 }) {
-  console.log("Add Task ", title);
+  console.log("Add Task", title);
   try {
     const res = await fetch(
       process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task",
@@ -40,7 +40,6 @@ export async function addTask({
           title: title,
           description: description,
           deadline: deadline,
-          completed: false,
           user_id: user_id,
         }),
       }
@@ -59,14 +58,12 @@ export async function editTask({
   title,
   description,
   deadline,
-  completed,
   user_id,
   id,
 }: {
   title: string;
   description: string;
   deadline: Date;
-  completed: boolean;
   user_id: string;
   id: string;
 }) {
@@ -81,7 +78,6 @@ export async function editTask({
           title: title,
           description: description,
           deadline: deadline,
-          completed: completed,
           user_id: user_id,
         }),
       }
@@ -122,6 +118,80 @@ export async function deleteTask(id: string) {
   try {
     const res = await fetch(
       process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/task/" + id,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    if (res.ok) {
+      return res.json();
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+//Subtask
+
+export async function addSubtask({
+  title,
+  task_id,
+}: {
+  title: string;
+  task_id: string;
+}) {
+  console.log("Add Subtask", title);
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/subtask",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title,
+          task_id: task_id,
+        }),
+      }
+    );
+    if (res.ok) {
+      return res.json();
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function checkSubtask(id: string, completed: boolean) {
+  try {
+    console.log("Subtask", completed);
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE +
+        "/subtask/" +
+        id +
+        (completed ? "/check" : "/uncheck"),
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    if (res.ok) {
+      return "ok";
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function deleteSubtask(id: string) {
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_TASK_SERVICE_API_ROUTE + "/subtask/" + id,
       {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

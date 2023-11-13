@@ -1,4 +1,4 @@
-import { Paper, Typography } from "@mui/material";
+import { Divider, Paper, Typography } from "@mui/material";
 import HabitGraph from "./component/HabitGraph";
 import StreakVisual, { StreakData } from "./component/StreakVisual";
 
@@ -36,16 +36,18 @@ export default function page() {
         Task
       </Typography>
       <Paper
-        sx={{ display: "inline-block" }}
-        className={`p-4 mb-4 bg-green-200`}
+        sx={{ display: "inline-block", backgroundColor: "rgb(187 247 208)" }}
+        className={`p-4 mb-4`}
       >
         You have completed 20 tasks in 2 Months!
       </Paper>
+      <Divider className="my-3" />
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
-        Streak
+        Routine
       </Typography>
       <StreakVisual data={streakData} />
       <StreakVisual data={streakData} />
+      <Divider className="my-3" />
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Habit
       </Typography>

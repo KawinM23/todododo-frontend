@@ -25,9 +25,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className + " bg-[#c5e5ef]"}>
         <NextAuthProvider session={session}>
-          <CssBaseline />
+          {/* <CssBaseline /> */}
           <Box sx={{ display: "flex" }}>
             <Sidebar />
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
