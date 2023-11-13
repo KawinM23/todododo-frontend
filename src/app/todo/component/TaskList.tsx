@@ -182,6 +182,9 @@ function Row(props: { row: Task }) {
   const [subtaskTitle, setSubtaskTitle] = useState("");
 
   const onAddSubtask = async () => {
+    if (subtaskTitle == "") {
+      return;
+    }
     try {
       const res = await addSubtask({ title: subtaskTitle, task_id: row.id });
       if (res != null) {
@@ -297,7 +300,8 @@ function Row(props: { row: Task }) {
                         setSubtaskTitle(e.target.value);
                       }}
                       value={subtaskTitle}
-                    ></TextField>
+                      placeholder="Subtask"
+                    />
                     <Button sx={{ textTransform: "none" }} type="submit">
                       Add Subtask
                     </Button>
