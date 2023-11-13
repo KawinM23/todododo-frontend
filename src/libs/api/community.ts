@@ -223,7 +223,7 @@ export async function deleteInviteCode(
 ) {
   //console.log(token);
   try {
-    console.log(code, invitecode);
+    console.log(code, `${invitecode}`);
     const res = await fetch(
       process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
         `/community/${code}/invite/${invitecode}`,
@@ -235,8 +235,6 @@ export async function deleteInviteCode(
         },
       }
     );
-
-    return res.json();
   } catch (err) {
     console.log(err);
   }

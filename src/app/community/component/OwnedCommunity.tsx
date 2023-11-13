@@ -123,12 +123,9 @@ function CommunityCard({ community }: { community: CommunityApi }) {
       inviteCode
     );
 
-    if (res) {
-      setSnackOpen(true);
-      setSuccessText("Deleted Invite Code!");
-
-      router.refresh();
-    }
+    setSnackOpen(true);
+    setSuccessText("Deleted Invite Code!");
+    router.refresh();
   };
   return (
     <Card variant="outlined">
