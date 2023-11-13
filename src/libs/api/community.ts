@@ -216,3 +216,28 @@ export async function joinWithInviteCode(token: any, code: string) {
     console.log(err);
   }
 }
+export async function deleteInviteCode(
+  token: any,
+  code: string,
+  invitecode: any
+) {
+  //console.log(token);
+  try {
+    console.log(code, invitecode);
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
+        `/community/${code}/invite/${invitecode}`,
+      {
+        method: "DELETE",
+        cache: "no-store",
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}

@@ -22,6 +22,7 @@ import React from "react";
 import {
   createInviteCode,
   deleteCommu,
+  deleteInviteCode,
   getInviteCode,
 } from "@/libs/api/community";
 
@@ -115,6 +116,20 @@ function CommunityCard({ community }: { community: CommunityApi }) {
     }
   };
 
+  const deletedInviteCode = async () => {
+    const res = await deleteInviteCode(
+      session?.user.accessToken,
+      community.id,
+      inviteCode
+    );
+
+    if (res) {
+      setSnackOpen(true);
+      setSuccessText("Deleted Invite Code!");
+
+      router.refresh();
+    }
+  };
   return (
     <Card variant="outlined">
       <Fragment>
@@ -166,7 +181,16 @@ function CommunityCard({ community }: { community: CommunityApi }) {
               Generate Invite Code
             </Button>
           ) : (
-            <Typography>Invite Code: {inviteCode}</Typography>
+            <>
+              <Typography>Invite Code: {inviteCode}</Typography>
+              <Button
+                onClick={deletedInviteCode}
+                className="text-xs"
+                variant="outlined"
+                color="error">
+                Delete Invite Code
+              </Button>
+            </>
           )}
         </CardContent>
       </Collapse>
