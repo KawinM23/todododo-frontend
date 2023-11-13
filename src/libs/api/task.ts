@@ -40,7 +40,6 @@ export async function addTask({
           title: title,
           description: description,
           deadline: deadline,
-          completed: false,
           user_id: user_id,
         }),
       }

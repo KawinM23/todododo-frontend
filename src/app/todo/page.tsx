@@ -9,19 +9,19 @@ import { getAllRoutines } from "@/libs/api/routine";
 
 export default async function page() {
   const session = await getServerSession(authOptions);
-  console.log(session);
+  // console.log(session);
 
   const allTasks = await getAllTasks(session?.user.sub ?? "");
   const allHabits = await getAllHabits(session?.user.sub ?? "");
   const allRoutines = await getAllRoutines(session?.user.sub ?? "");
 
   return (
-    <div className="w-full flex flex-row justify-around gap-4">
+    <main className="w-full flex flex-row justify-around gap-6">
       <div className="w-1/2 flex flex-col gap-4">
         <RoutineList routines={allRoutines} />
         <HabitList habits={allHabits} />
       </div>
       <TaskList tasks={allTasks} />
-    </div>
+    </main>
   );
 }

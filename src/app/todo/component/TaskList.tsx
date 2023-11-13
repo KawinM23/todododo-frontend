@@ -208,10 +208,17 @@ function Row(props: { row: Task }) {
             {expand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ width: 300, maxWidth: 300 }}
+          className={`${expand ? "flex-wrap break-all" : "truncate"}`}
+        >
           {row.title}
         </TableCell>
-        <TableCell>{dayjs(row.deadline).format("DD/MM/YYYY h:mm A")}</TableCell>
+        <TableCell sx={{ width: 250 }}>
+          {dayjs(row.deadline).format("DD/MM/YYYY h:mm A")}
+        </TableCell>
         <TableCell sx={{ width: 70 }} align="center">
           <IconButton aria-label="done" size="small" onClick={doneHandler}>
             <CheckIcon fontSize="inherit" />
@@ -291,7 +298,7 @@ function Row(props: { row: Task }) {
                 <Paper className="mt-2 p-2">
                   <form
                     action={onAddSubtask}
-                    className=" flex flex-row justify-between items-center"
+                    className="flex flex-row justify-between items-center"
                   >
                     <TextField
                       size="small"
