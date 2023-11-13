@@ -22,6 +22,7 @@ import React from "react";
 import {
   createInviteCode,
   deleteCommu,
+  deleteInviteCode,
   getInviteCode,
 } from "@/libs/api/community";
 
@@ -32,9 +33,13 @@ export default function OwnedCommunity({
 }) {
   return (
     <div className="grid grid-cols-3 gap-5">
-      {myCommunities.map((community: CommunityApi) => (
-        <CommunityCard key={community.id} community={community} />
-      ))}
+      {myCommunities.length > 0 ? (
+        myCommunities.map((community: CommunityApi) => (
+          <CommunityCard key={community.id} community={community} />
+        ))
+      ) : (
+        <Typography>Not owned any community</Typography>
+      )}
     </div>
   );
 }
@@ -111,6 +116,20 @@ function CommunityCard({ community }: { community: CommunityApi }) {
     }
   };
 
+  const deletedInviteCode = async () => {
+    const res = await deleteInviteCode(
+      session?.user.accessToken,
+      community.id,
+      inviteCode
+    );
+
+    if (res) {
+      setSnackOpen(true);
+      setSuccessText("Deleted Invite Code!");
+
+      router.refresh();
+    }
+  };
   return (
     <Card variant="outlined">
       <Fragment>
@@ -162,7 +181,16 @@ function CommunityCard({ community }: { community: CommunityApi }) {
               Generate Invite Code
             </Button>
           ) : (
-            <Typography>Invite Code: {inviteCode}</Typography>
+            <>
+              <Typography>Invite Code: {inviteCode}</Typography>
+              <Button
+                onClick={deletedInviteCode}
+                className="text-xs"
+                variant="outlined"
+                color="error">
+                Delete Invite Code
+              </Button>
+            </>
           )}
         </CardContent>
       </Collapse>
