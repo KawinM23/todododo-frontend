@@ -5,6 +5,7 @@ import {
   Backdrop,
   Box,
   Button,
+  Checkbox,
   ClickAwayListener,
   Collapse,
   Fade,
@@ -36,8 +37,17 @@ import CheckIcon from "@mui/icons-material/Check";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import React from "react";
-import { addTask, completeTask, deleteTask, editTask } from "@/libs/api/task";
+import DeleteIcon from "@mui/icons-material/Delete";
+
+import {
+  addSubtask,
+  addTask,
+  checkSubtask,
+  completeTask,
+  deleteSubtask,
+  deleteTask,
+  editTask,
+} from "@/libs/api/task";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -49,24 +59,30 @@ interface Task {
   completed: boolean;
   user_id: string;
   community_id?: string;
+  subtasks: {
+    id: string;
+    title: string;
+    completed: boolean;
+    task_id: string;
+  }[];
 }
 
-function createData(
-  id: string,
-  title: string,
-  description: string | undefined,
-  community_id: string | undefined
-): Task {
-  return {
-    id: id,
-    title: title,
-    description: description,
-    deadline: new Date("October 13, 2022 11:13:00"),
-    completed: false,
-    user_id: "0001",
-    community_id: community_id,
-  };
-}
+// function createData(
+//   id: string,
+//   title: string,
+//   description: string | undefined,
+//   community_id: string | undefined
+// ): Task {
+//   return {
+//     id: id,
+//     title: title,
+//     description: description,
+//     deadline: new Date("October 13, 2022 11:13:00"),
+//     completed: false,
+//     user_id: "0001",
+//     community_id: community_id,
+//   };
+// }
 
 // const rows = [
 //   createData("000001", "Task01", undefined, undefined),
@@ -122,7 +138,7 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
   );
 }
 
-function Row(props: { row: ReturnType<typeof createData> }) {
+function Row(props: { row: Task }) {
   const router = useRouter();
   const { row } = props;
   const [expand, setExpand] = useState(false);
@@ -131,6 +147,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
   const prevOpen = useRef(open);
+
   useEffect(() => {
     if (prevOpen.current === true && open === false) {
       anchorRef.current!.focus();
@@ -158,19 +175,31 @@ function Row(props: { row: ReturnType<typeof createData> }) {
     }
   };
 
+  const [subtaskTitle, setSubtaskTitle] = useState("");
+
+  const onAddSubtask = async () => {
+    try {
+      const res = await addSubtask({ title: subtaskTitle, task_id: row.id });
+      if (res != null) {
+        router.refresh();
+        setSubtaskTitle("");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <React.Fragment>
+    <Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell sx={{ width: 50 }}>
-          {(row.description || row.community_id) && (
-            <IconButton
-              aria-label="expand row"
-              size="small"
-              onClick={() => setExpand(!expand)}
-            >
-              {expand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          )}
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setExpand(!expand)}
+          >
+            {expand ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
           {row.title}
@@ -243,7 +272,35 @@ function Row(props: { row: ReturnType<typeof createData> }) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={expand} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography>{row.description}</Typography>
+              {row.description && (
+                <Typography className="mt-4 mb-1">{row.description}</Typography>
+              )}
+
+              <div className="mt-3">
+                <h4 className="font-semibold">Subtasks</h4>
+                {row.subtasks.map((subtask) => {
+                  return <SubtaskCard subtask={subtask} key={subtask.id} />;
+                })}
+                <Paper className="mt-2 p-2">
+                  <form
+                    action={onAddSubtask}
+                    className=" flex flex-row justify-between items-center"
+                  >
+                    <TextField
+                      size="small"
+                      sx={{ flexGrow: 1 }}
+                      onChange={(e) => {
+                        setSubtaskTitle(e.target.value);
+                      }}
+                      value={subtaskTitle}
+                    ></TextField>
+                    <Button sx={{ textTransform: "none" }} type="submit">
+                      Add Subtask
+                    </Button>
+                  </form>
+                </Paper>
+              </div>
+
               {row.community_id && (
                 <Typography>Community: {row.community_id}</Typography>
               )}
@@ -252,7 +309,47 @@ function Row(props: { row: ReturnType<typeof createData> }) {
         </TableCell>
       </TableRow>
       <AddTask openState={[openEditTask, setOpenEditTask]} taskProp={row} />
-    </React.Fragment>
+    </Fragment>
+  );
+}
+
+function SubtaskCard({ subtask }: { subtask: Task["subtasks"][0] }) {
+  const router = useRouter();
+  const onClickSubtaskCheckbox = async () => {
+    try {
+      const res = await checkSubtask(subtask.id, !subtask.completed);
+      if (res != null) {
+        router.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onDeleteSubtask = async () => {
+    try {
+      const res = await deleteSubtask(subtask.id);
+      if (res != null) {
+        router.refresh();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <Paper className="mt-2 p-2 flex flex-row justify-between items-center">
+      {subtask.title}
+      <span>
+        <Checkbox value={subtask.completed} onClick={onClickSubtaskCheckbox} />
+        <IconButton
+          sx={{ marginLeft: 3, marginRight: 2 }}
+          onClick={onDeleteSubtask}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </span>
+    </Paper>
   );
 }
 
@@ -272,8 +369,8 @@ function AddTask({
     deadline: taskProp?.deadline || new Date(),
   });
 
-  const [snackOpen, setSnackOpen] = React.useState(false);
-  const [successText, setSuccessText] = React.useState("");
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [successText, setSuccessText] = useState("");
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -298,7 +395,6 @@ function AddTask({
           const res = await editTask({
             ...task,
             user_id: session?.user.sub,
-            completed: taskProp.completed,
             id: taskProp.id,
           });
           if (res != null) {
