@@ -77,31 +77,32 @@ function CommunityCard({ community }: { community: CommunityApi }) {
   };
   return (
     <Card variant="outlined">
-      <Fragment>
-        <CardContent>
-          <Typography variant="h5" component="div">
-            {community.name}
-          </Typography>
+      <CardContent>
+        <div
+          className={`rounded-2xl text-xs border-[1px] w-min my-1 py-1 px-2 ${
+            community.is_private
+              ? "text-sky-600 border-sky-600"
+              : "text-green-600 border-green-600"
+          }`}
+        >
+          {community.is_private ? "Private" : "Public"}
+        </div>
+        <Typography variant="h5" component="div">
+          {community.name}
+        </Typography>
 
-          <Typography variant="body2">{community.description}</Typography>
-        </CardContent>
-        <CardActions>
-          <Button onClick={() => joinCommu(community.id)} size="small">
-            Join
-          </Button>
-        </CardActions>
-        <Snackbar
-          open={snackOpen}
-          autoHideDuration={3000}
-          onClose={handleClose}>
-          <Alert
-            severity="success"
-            sx={{ width: "100%" }}
-            onClose={handleClose}>
-            {successText}
-          </Alert>
-        </Snackbar>
-      </Fragment>
+        <Typography variant="body2">{community.description}</Typography>
+      </CardContent>
+      <CardActions>
+        <Button onClick={() => joinCommu(community.id)} size="small">
+          Join
+        </Button>
+      </CardActions>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert severity="success" sx={{ width: "100%" }} onClose={handleClose}>
+          {successText}
+        </Alert>
+      </Snackbar>
     </Card>
   );
 }
@@ -158,7 +159,8 @@ function JoinCommunity({
           backdrop: {
             timeout: 500,
           },
-        }}>
+        }}
+      >
         <Fade in={open}>
           <Box
             sx={{
@@ -172,7 +174,8 @@ function JoinCommunity({
               boxShadow: 24,
               p: 4,
             }}
-            className="rounded-xl">
+            className="rounded-xl"
+          >
             <form action={onSubmit} className="flex flex-col gap-4">
               <Typography variant="h6" className="mb-2">
                 Add Community

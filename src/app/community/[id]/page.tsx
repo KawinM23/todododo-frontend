@@ -11,13 +11,13 @@ export default async function CommunityPage({
   const resna = await getallCommuTask(params.id);
 
   return (
-    <div>
+    <main className="p-5">
       <div className="flex mb-5 flex-col justify-center items-center">
         <div className="text-3xl mb-2">Welcome to Community {res.name}</div>
         <div>{res.description}</div>
       </div>
       <Commu data={res} />
       <TaskCommu data={resna} />
-    </div>
+    </main>
   );
 }

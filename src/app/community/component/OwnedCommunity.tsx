@@ -54,7 +54,6 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   return <IconButton {...other} />;
 })(({ theme, expand }) => ({
   transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
   transition: theme.transitions.create("transform", {
     duration: theme.transitions.duration.shortest,
   }),
@@ -129,55 +128,62 @@ function CommunityCard({ community }: { community: CommunityApi }) {
     setDetected(!detected);
   };
   return (
-    <Card variant="outlined">
-      <Fragment>
-        <CardContent>
-          <Link href={"/community/" + community.id}>
-            <Typography variant="h5" component="div">
-              {community.name}
-            </Typography>
-          </Link>
+    <Card variant="outlined" className="h-min">
+      <CardContent>
+        <div
+          className={`rounded-2xl text-xs border-[1px] w-min my-1 py-1 px-2 ${
+            community.is_private
+              ? "text-sky-600 border-sky-600"
+              : "text-green-600 border-green-600"
+          }`}
+        >
+          {community.is_private ? "Private" : "Public"}
+        </div>
+        <Link href={"/community/" + community.id}>
+          <Typography variant="h5" component="div">
+            {community.name}
+          </Typography>
+        </Link>
+        <Typography variant="body2" className="min-h-[1rem]">
+          {community.description}
+        </Typography>
+      </CardContent>
+      <CardActions disableSpacing>
+        {community.is_private ? (
+          <ExpandMore
+            expand={expanded}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more"
+          >
+            <ExpandMoreIcon />
+          </ExpandMore>
+        ) : (
+          <></>
+        )}
+        <Button
+          onClick={() => {
+            deletingCommu(community.id);
+          }}
+          sx={{ marginLeft: "auto" }}
+        >
+          Delete
+        </Button>
+      </CardActions>
+      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleClose}>
+        <Alert severity="success" sx={{ width: "100%" }} onClose={handleClose}>
+          {successText}
+        </Alert>
+      </Snackbar>
 
-          <Typography variant="body2">{community.description}</Typography>
-        </CardContent>
-        <CardActions disableSpacing>
-          <Button
-            onClick={() => {
-              deletingCommu(community.id);
-            }}>
-            Delete
-          </Button>
-          {community.is_private ? (
-            <ExpandMore
-              expand={expanded}
-              onClick={handleExpandClick}
-              aria-expanded={expanded}
-              aria-label="show more">
-              <ExpandMoreIcon />
-            </ExpandMore>
-          ) : (
-            <></>
-          )}
-        </CardActions>
-        <Snackbar
-          open={snackOpen}
-          autoHideDuration={3000}
-          onClose={handleClose}>
-          <Alert
-            severity="success"
-            sx={{ width: "100%" }}
-            onClose={handleClose}>
-            {successText}
-          </Alert>
-        </Snackbar>
-      </Fragment>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {inviteCode === "no" ? (
             <Button
               onClick={generateInviteCode}
               className="text-xs"
-              variant="outlined">
+              variant="outlined"
+            >
               Generate Invite Code
             </Button>
           ) : (
@@ -187,7 +193,8 @@ function CommunityCard({ community }: { community: CommunityApi }) {
                 onClick={deletedInviteCode}
                 className="text-xs"
                 variant="outlined"
-                color="error">
+                color="error"
+              >
                 Delete Invite Code
               </Button>
             </>
