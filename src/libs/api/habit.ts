@@ -12,7 +12,10 @@ export async function getAllHabits(user_id: string) {
       }
     );
 
-    return res.json();
+    if (res.ok) {
+      return res.json();
+    }
+    return null;
   } catch (err) {
     console.log(err);
   }

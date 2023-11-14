@@ -24,7 +24,7 @@ export default function TaskStreak() {
     return () => {};
   }, [session]);
 
-  if (taskStreak.user_id != "" && taskStreak.combo == 0) {
+  if (!taskStreak || (taskStreak.user_id != "" && taskStreak.combo == 0)) {
     return (
       <Paper sx={{ display: "inline-block" }} className={`p-4 mb-4 mr-4`}>
         No task completed yet!
