@@ -62,7 +62,7 @@ export async function getHabitStreaks(habit_ids: string) {
     if (res.ok) {
       return res.json();
     }
-    return null;
+    return [];
   } catch (err) {
     console.log(err);
   }
