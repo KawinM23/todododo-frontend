@@ -1,5 +1,3 @@
-You can visit this website [here](https://todododo-frontend.vercel.app/).
-
 [Backend Repository of this project](https://github.com/thanadolps/TODODODO).
 
 This project is a part of Software Architecture in Chulalongkorn University.
