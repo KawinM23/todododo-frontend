@@ -9,7 +9,7 @@ export default async function page() {
   const webhook = await getMyWebhook(session?.user.sub);
 
   return (
-    <main className="center-container flex-col h-[80vh]">
+    <main className="center-container flex-col h-screen p-5">
       <Account />
       <Setting myWebhook={webhook} />
     </main>

@@ -45,6 +45,7 @@ import {
   editRoutine,
 } from "@/libs/api/routine";
 import { useSession } from "next-auth/react";
+import { revalidateTag } from "next/cache";
 
 interface Routine {
   id: string;
@@ -84,13 +85,13 @@ export default function RoutineList({ routines }: { routines: Routine[] }) {
   const [openAddTask, setOpenAddTask] = useState(false);
 
   return (
-    <div className="h-[44vh]">
+    <div className="h-[49%] flex flex-col">
       <div className="w-full flex flex-row justify-between">
         <Typography variant="h5">Routine Lists</Typography>
         <Button onClick={() => setOpenAddTask(true)}>Add Routine</Button>
         <AddRoutine openState={[openAddTask, setOpenAddTask]} />
       </div>
-      <TableContainer component={Paper} sx={{ maxHeight: "90%" }}>
+      <TableContainer component={Paper} className="flex-1">
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>

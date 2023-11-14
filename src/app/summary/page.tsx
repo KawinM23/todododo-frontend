@@ -28,7 +28,7 @@ export default function page() {
   const habitData = [1, 1.01, 1.02, 1.03, 0.99, 0.98];
 
   return (
-    <main>
+    <main className="p-5">
       <Typography variant="h4" sx={{ marginBottom: 2 }}>
         Summary
       </Typography>

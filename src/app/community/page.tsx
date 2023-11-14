@@ -18,7 +18,7 @@ export default async function page() {
   //console.log("own ", ownedCommu);
 
   return (
-    <main>
+    <main className="p-5">
       <MyCommunity myCommunities={ownedCommu} joinedCommunities={joinedCommu} />
       <CommunityList publicCommu={publicCommu} />
     </main>

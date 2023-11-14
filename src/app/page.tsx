@@ -31,7 +31,7 @@ export default function Home() {
   }
 
   return (
-    <main className="center-container h-[90vh]">
+    <main className="center-container h-[100vh] p-5">
       <div className="growing"></div>
       <h1 className="text-2xl font-bold my-5">Welcome to TODODODODO</h1>
       <h2 className="text-xl mb-5">Todo application</h2>

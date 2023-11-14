@@ -30,7 +30,12 @@ export default async function RootLayout({
           {/* <CssBaseline /> */}
           <Box sx={{ display: "flex" }}>
             <Sidebar />
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+              }}
+            >
               {children}
             </Box>
           </Box>

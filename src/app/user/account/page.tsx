@@ -6,7 +6,7 @@ export default async function page() {
   console.log(session);
   if (session) {
     return (
-      <main className="center-container h-screen">
+      <main className="center-container h-screen p-5">
         <div>
           {/* <p>Username: {session?.user.name}</p>
           <p>Email: {session?.user.email}</p> */}

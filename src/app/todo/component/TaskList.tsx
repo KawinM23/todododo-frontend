@@ -52,6 +52,7 @@ import {
 } from "@/libs/api/task";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { revalidateTag } from "next/cache";
 
 interface Task {
   id: string;
@@ -120,7 +121,7 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
         <Button onClick={() => setOpenAddTask(true)}>Add Task</Button>
         <AddTask openState={[openAddTask, setOpenAddTask]} />
       </div>
-      <TableContainer component={Paper} className="h-[87vh]">
+      <TableContainer component={Paper} className="h-full">
         <Table sx={{ minWidth: 650 }} aria-label="collapsible table">
           <TableHead>
             <TableRow>
@@ -219,7 +220,7 @@ function Row(props: { row: Task }) {
           {row.title}
         </TableCell>
         <TableCell sx={{ width: 250 }}>
-          {dayjs(row.deadline).format("DD/MM/YYYY  HH:mm ")}
+          {dayjs(row.deadline).format("DD/MM/YYYY HH:mm")}
         </TableCell>
         <TableCell sx={{ width: 70 }} align="center">
           <IconButton aria-label="done" size="small" onClick={doneHandler}>
