@@ -11,48 +11,22 @@ import { getHabitStreaks, getRoutineStreaks } from "@/libs/api/summary";
 export default async function page() {
   const session = await getServerSession(authOptions);
 
-  const streakData: StreakData = {
-    startDate: new Date("2023/10/01"),
-    endDate: new Date("2023/10/14"),
-    streak: [
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-    ],
-    repeat: "monthly",
-  };
-
-  const habitData = [1, 1.01, 1.02, 1.03, 0.99, 0.98];
-
   //Routine
-  // const allRoutines = await getAllRoutines(session?.user.sub ?? "");
+  const allRoutines = await getAllRoutines(session?.user.sub ?? "");
 
-  // const routinesIds = allRoutines.map((routine: any) => {
-  //   return "task_ids=" + routine.id;
-  // });
+  const routinesIds = allRoutines.map((routine: any) => {
+    return "task_ids=" + routine.id;
+  });
 
-  // const routineTitles = new Map(
-  //   allRoutines.map((routine: any) => {
-  //     return [routine.id, routine.title];
-  //   })
-  // );
+  const routineTitles = new Map(
+    allRoutines.map((routine: any) => {
+      return [routine.id, routine.title];
+    })
+  );
 
-  // let queryRoutineIds = routinesIds.join("&");
+  const queryRoutineIds = routinesIds.join("&");
 
-  // const routineStreaks = await getRoutineStreaks(queryRoutineIds);
-
-  // console.log(routineStreaks);
+  const routineStreaks = await getRoutineStreaks(queryRoutineIds);
 
   //Habit
   const allHabits = await getAllHabits(session?.user.sub ?? "");
@@ -67,7 +41,7 @@ export default async function page() {
     })
   );
 
-  let queryHabitIds = habitIds.join("&");
+  const queryHabitIds = habitIds.join("&");
 
   const habitStreaks = await getHabitStreaks(queryHabitIds);
   const sortedHabitStreaks = habitStreaks.sort((a: any, b: any) => {
@@ -87,8 +61,23 @@ export default async function page() {
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Routine
       </Typography>
-      <StreakVisual title={"title"} data={streakData} />
-      <StreakVisual title={"title"} data={streakData} />
+      {routineStreaks.length != 0 ? (
+        routineStreaks.map((routine: any) => {
+          return (
+            <StreakVisual
+              key={routine.task_id}
+              title={routineTitles.get(routine.task_id) as string}
+              dates={routine.dates}
+              completions={routine.completions}
+              typena={routine.typena}
+            />
+          );
+        })
+      ) : (
+        <Paper sx={{ display: "inline-block" }} className={`p-4 mb-4 mr-4`}>
+          No routine done yet!
+        </Paper>
+      )}
       <Divider className="my-3" />
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Habit

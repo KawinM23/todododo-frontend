@@ -169,7 +169,12 @@ function Row(props: { row: Routine }) {
         </TableCell>
         <TableCell>{row.typena}</TableCell>
         <TableCell sx={{ width: 70 }} align="center">
-          <IconButton aria-label="done" size="small" onClick={doneHandler}>
+          <IconButton
+            aria-label="done"
+            size="small"
+            onClick={doneHandler}
+            style={{ backgroundColor: row.completed ? "#41e47d" : "" }}
+          >
             <CheckIcon fontSize="inherit" />
           </IconButton>
         </TableCell>
