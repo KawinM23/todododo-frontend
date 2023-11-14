@@ -1,5 +1,5 @@
 "use client";
-import { joiningCommu, leavingCommu } from "@/libs/api/community";
+
 import { CommunityApi } from "@/libs/interface/community";
 import {
   Alert,
@@ -7,34 +7,36 @@ import {
   Card,
   CardActions,
   CardContent,
+  Link,
   Snackbar,
   Typography,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
-import { Fragment } from "react";
+import React, { Fragment } from "react";
+interface Task {
+  title: string;
+  id: string;
+  description: string;
+  deadline: any;
+}
 
-export default function JoinedCommunity({
-  communities,
-}: {
-  communities: CommunityApi[];
-}) {
+export default function TaskCommu(data: any) {
+  console.log(data);
   return (
-    <div className="grid grid-cols-3 gap-5">
-      {communities.length >= 0 ? (
-        communities.map((community: CommunityApi) => (
+    <div>
+      {data.data.length >= 0 ? (
+        data.data.map((community: Task) => (
           <CommunityCard key={community.id} community={community} />
         ))
       ) : (
-        <Typography>Not joined any community</Typography>
+        <Typography>No Community Task Yet</Typography>
       )}
     </div>
   );
 }
 
-function CommunityCard({ community }: { community: CommunityApi }) {
+function CommunityCard({ community }: { community: Task }) {
   const { data: session } = useSession();
   const router = useRouter();
   const [snackOpen, setSnackOpen] = React.useState(false);
@@ -49,30 +51,18 @@ function CommunityCard({ community }: { community: CommunityApi }) {
 
     setSnackOpen(false);
   };
-  const leaveCommu = async (id: string) => {
-    const res = await leavingCommu(session?.user.accessToken, id);
-    console.log(res);
-    if (res?.ok) {
-      setSnackOpen(true);
 
-      router.refresh();
-    }
-  };
   return (
     <Card variant="outlined">
       <Fragment>
         <CardContent>
           <Typography variant="h5" component="div">
-            {community.name}
+            {community.title}
           </Typography>
 
           <Typography variant="body2">{community.description}</Typography>
         </CardContent>
-        <CardActions sx={{ float: "right" }}>
-          <Button onClick={() => leaveCommu(community.id)} size="small">
-            Leave
-          </Button>
-        </CardActions>
+
         <Snackbar
           open={snackOpen}
           autoHideDuration={3000}

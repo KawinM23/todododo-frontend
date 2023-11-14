@@ -13,6 +13,21 @@ export async function getAllPublicCommu() {
     console.log(err);
   }
 }
+export async function getCommuByID(id: any) {
+  try {
+    const res = await fetch(
+      process.env.ACCOUNT_SERVICE_API_ROUTE + `/community/${id}`,
+      {
+        method: "GET",
+        cache: "no-store",
+      }
+    );
+
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
 // prettier-ignore
 export async function getAllJoinedCommu(token: string) {
   //console.log(token);
@@ -223,7 +238,7 @@ export async function deleteInviteCode(
 ) {
   //console.log(token);
   try {
-    console.log(code, invitecode);
+    console.log(code, `${invitecode}`);
     const res = await fetch(
       process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
         `/community/${code}/invite/${invitecode}`,
@@ -233,6 +248,68 @@ export async function deleteInviteCode(
         headers: {
           Authorization: "Bearer " + token,
         },
+      }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getCommuById() {
+  try {
+    const res = await fetch(
+      process.env.ACCOUNT_SERVICE_API_ROUTE + "/community",
+      {
+        method: "GET",
+        cache: "no-store",
+      }
+    );
+
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function createCommuTask(
+  token: any,
+  title: string,
+  description: string,
+  deadline: any,
+  id: any
+) {
+  try {
+    const res = await fetch(
+      process.env.NEXT_PUBLIC_ACCOUNT_SERVICE_API_ROUTE +
+        `/community/${id}/task`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({
+          title: title,
+          description: description,
+          deadline: deadline,
+          subtasks: [""],
+        }),
+      }
+    );
+
+    return res.json();
+  } catch (err) {
+    console.log(err);
+  }
+}
+export async function getallCommuTask(id: string) {
+  //console.log(token);
+  try {
+    const res = await fetch(
+      process.env.ACCOUNT_SERVICE_API_ROUTE + `/community/${id}/task`,
+      {
+        method: "GET",
+        cache: "no-store",
       }
     );
 
