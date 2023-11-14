@@ -3,7 +3,15 @@
 import { Paper, Typography } from "@mui/material";
 import * as echarts from "echarts";
 import { useEffect, useRef } from "react";
-export default function HabitGraph({ data }: { data: any }) {
+export default function HabitGraph({
+  title,
+  growth,
+  date,
+}: {
+  title: string | null;
+  growth: any;
+  date: any;
+}) {
   const echartsContainerRef = useRef(null);
 
   useEffect(() => {
@@ -12,6 +20,7 @@ export default function HabitGraph({ data }: { data: any }) {
 
     // ECharts configuration
     const option = {
+      title: { text: title },
       tooltip: {
         trigger: "axis",
       },
@@ -31,21 +40,22 @@ export default function HabitGraph({ data }: { data: any }) {
       xAxis: {
         type: "category",
         boundaryGap: false,
+        data: date,
       },
       yAxis: {
         type: "value",
         min: function (value: { min: number }) {
-          return Math.round(value.min ** 2 * 1000) / 1000;
+          return Math.round((value.min - 0.1) * 1000) / 1000;
         },
         max: function (value: { max: number }) {
-          return Math.round(value.max ** 2 * 1000) / 1000;
+          return Math.round((value.max + 0.1) * 1000) / 1000;
         },
       },
       series: [
         {
-          name: "Score",
+          name: "Growth",
           type: "line",
-          data: data,
+          data: growth,
           markPoint: {
             data: [
               { type: "max", name: "Max" },
@@ -66,7 +76,7 @@ export default function HabitGraph({ data }: { data: any }) {
     return () => {
       chart.dispose();
     };
-  }, [data]);
+  }, [growth]);
 
   return (
     <Paper className={`mb-4 p-3`}>
