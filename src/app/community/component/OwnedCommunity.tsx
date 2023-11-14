@@ -25,6 +25,7 @@ import {
   deleteInviteCode,
   getInviteCode,
 } from "@/libs/api/community";
+import Link from "next/link";
 
 export default function OwnedCommunity({
   myCommunities,
@@ -66,6 +67,7 @@ function CommunityCard({ community }: { community: CommunityApi }) {
   const [snackOpen, setSnackOpen] = React.useState(false);
   const [successText, setSuccessText] = React.useState("Deleted Community!");
   const [inviteCode, setInviteCode] = React.useState<string>();
+  const [detected, setDetected] = useState(true);
   useEffect(() => {
     async function fetchData() {
       if (session) {
@@ -80,7 +82,7 @@ function CommunityCard({ community }: { community: CommunityApi }) {
     if (community.is_private) {
       fetchData();
     }
-  }, [session]);
+  }, [session, detected]);
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -111,8 +113,7 @@ function CommunityCard({ community }: { community: CommunityApi }) {
     if (res) {
       setSnackOpen(true);
       setSuccessText("Generated Invite Code!");
-
-      router.refresh();
+      setDetected(!detected);
     }
   };
 
@@ -125,15 +126,17 @@ function CommunityCard({ community }: { community: CommunityApi }) {
 
     setSnackOpen(true);
     setSuccessText("Deleted Invite Code!");
-    router.refresh();
+    setDetected(!detected);
   };
   return (
     <Card variant="outlined">
       <Fragment>
         <CardContent>
-          <Typography variant="h5" component="div">
-            {community.name}
-          </Typography>
+          <Link href={"/community/" + community.id}>
+            <Typography variant="h5" component="div">
+              {community.name}
+            </Typography>
+          </Link>
 
           <Typography variant="body2">{community.description}</Typography>
         </CardContent>
